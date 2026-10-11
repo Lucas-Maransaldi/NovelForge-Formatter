@@ -29,13 +29,13 @@ O primeiro comando gera `fixtures/storage-poc-book-a.epub` e `fixtures/storage-p
 4. Importe os dois arquivos da pasta [`fixtures/`](fixtures/) pelo fluxo de importação de EPUB local do LNReader. São livros de diagnóstico distintos.
 5. Desative Wi-Fi/dados móveis antes dos testes offline. O código só tenta `fetch()` se a URL relativa resolver para `file:`. Se resolver para `http:`/`https:`, registra `NOT_TESTED` e não envia requisição à rede. A URL é formada apenas a partir de `document.baseURI`; não são tentados diretórios Android arbitrários.
 
-O Custom Code identifica livro/capítulo por `data-nf-novel` e `data-nf-chapter` dos próprios capítulos sintéticos, não por título visível nem por API interna presumida do LNReader. Ele executa automaticamente ao carregar o capítulo. O painel também tem “Executar novamente”.
+O Custom Code identifica livro/capítulo por `data-nf-novel` e `data-nf-chapter` dos próprios capítulos sintéticos, não por título visível nem por API interna presumida do LNReader. Ele executa automaticamente ao carregar o capítulo. O painel indica `EM ANDAMENTO`/`CONCLUIDO`; copiar enquanto roda aguarda a conclusão, e as seções JSON, LOCALSTORAGE, INDEXEDDB e CHAPTER recebem estados explícitos mesmo quando algo não pode ser testado. Timeout e erro incluem motivo no relatório. O painel também tem “Executar novamente”.
 
 ## Executar e coletar resultados
 
 1. Abra Book A, Chapter A; aguarde o painel. Observe `location.href`, `location.origin`, `document.baseURI`, fetch, carriers e storage.
-2. Use **Copiar relatório**. A URL copiada tem query/hash removidos e caminhos locais/HTTP reduzidos para evitar expor caminhos ou parâmetros desnecessários. Nenhum JSON integral é exibido/copied.
-3. Abra Chapter B, depois volte a Chapter A. Compare os valores anteriores de storage e os IDs/capítulos. Repetir um capítulo sozinho não comprova persistência após reinício.
+2. Aguarde o indicador `CONCLUIDO` (ou toque em **Copiar relatório**, que aguardará a execução). A URL copiada tem query/hash removidos e caminhos locais/HTTP reduzidos para evitar expor caminhos ou parâmetros desnecessários. Nenhum JSON integral é exibido/copied.
+3. Abra Chapter B, depois volte a Chapter A. `Chapter persistence` só será `PASS` quando o script recuperar, antes da escrita corrente, um registro válido cujo `chapterId` seja diferente do capítulo atual. `Write/read` verifica separadamente a escrita desta execução; por si só não é prova de persistência entre capítulos. Repetir um capítulo sozinho não comprova persistência após reinício.
 4. Force-stop e reabra LNReader conforme o roteiro em [`results/ANDROID_TEST_RESULTS.md`](results/ANDROID_TEST_RESULTS.md). Preencha os campos manualmente. Não limpe os dados do aplicativo.
 5. Abra Book B após escrever registros no Book A. O Custom Code usa chaves que contêm `bookId`, e tenta detectar um registro do outro livro. `Origin isolation` permanece `UNKNOWN`: ausência do registro não prova isolamento real por origem. Se o registro A estiver visível em B, há compartilhamento de storage acessível ao script, apesar do namespace.
 6. “Fechar” remove somente o painel. Os registros diagnósticos permanecem. O script não executa `indexedDB.deleteDatabase()`; a limpeza probe remove apenas sua própria chave localStorage descartável. Não limpe o banco IndexedDB manualmente durante a rodada.

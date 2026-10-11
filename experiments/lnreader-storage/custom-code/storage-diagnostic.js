@@ -41,6 +41,8 @@
   };
   let panel;
   let diagnosing = false;
+  let activeRun = Promise.resolve();
+  let runNumber = 0;
 
   const add = (section, label, status, detail = '') => {
     results[section].push({ label, status, detail: String(detail || '') });
@@ -79,6 +81,21 @@
     });
   };
 
+  const setRunState = (state, detail = '') => {
+    const indicator = panel?.querySelector('[data-poc-run-state]');
+    if (!indicator) return;
+    indicator.textContent = detail ? `${state} — ${detail}` : state;
+    indicator.setAttribute('data-state', state.toLowerCase().replace(/[^a-z]+/g, '-'));
+  };
+
+  const finalizeEmptySections = () => {
+    for (const section of ['json', 'localStorage', 'indexedDB', 'chapter']) {
+      if (results[section].length === 0) {
+        add(section, 'Section result', 'UNKNOWN', 'Nenhum resultado produzido; consulte erros/timeout da execução.');
+      }
+    }
+  };
+
   const redactUrl = value => {
     try {
       const url = new URL(value);
@@ -111,8 +128,10 @@
       `document.baseURI: ${redactUrl(document.baseURI)}`,
       '',
     ];
+    lines.push(`Execution: ${diagnosing ? 'IN_PROGRESS' : 'COMPLETE'}`);
     for (const [section, items] of Object.entries(results)) {
       lines.push(section.toUpperCase());
+      if (!items.length) lines.push('- Section result: UNKNOWN — Nenhum resultado produzido nesta execução.');
       for (const item of items) {
         lines.push(`- ${item.label}: ${statusText(item.status)}${item.detail ? ` — ${item.detail}` : ''}`);
       }
@@ -135,6 +154,13 @@
     title.textContent = 'NOVELFORGE STORAGE DIAGNOSTIC';
     panel.append(title);
 
+    const runState = document.createElement('div');
+    runState.className = 'nf-poc-run-state';
+    runState.setAttribute('data-poc-run-state', '');
+    runState.setAttribute('role', 'status');
+    runState.setAttribute('aria-live', 'polite');
+    panel.append(runState);
+
     const identity = document.createElement('div');
     identity.className = 'nf-poc-identity';
     identity.textContent = `Book: ${bookId} · Chapter: ${chapterId} · Origin: ${location.origin || 'null'}`;
@@ -147,6 +173,7 @@
 
     const sectionNames = [
       ['environment', 'ENVIRONMENT / CHAPTER'],
+      ['chapter', 'CHAPTER'],
       ['json', 'JSON AUXILIARY FILE'],
       ['localStorage', 'LOCALSTORAGE'],
       ['indexedDB', 'INDEXEDDB'],
@@ -178,6 +205,13 @@
       button.addEventListener('click', event => event.stopPropagation());
     }
     copy.addEventListener('click', async () => {
+      if (diagnosing) {
+        copy.disabled = true;
+        copy.textContent = 'Aguardando diagnóstico…';
+        await activeRun;
+        if (!copy.isConnected) return;
+        copy.disabled = false;
+      }
       const text = makeReport();
       let copied = false;
       try {
@@ -209,17 +243,19 @@
     rerun.addEventListener('click', () => {
       if (diagnosing) return;
       results.environment.length = 0;
+      results.chapter.length = 0;
       results.json.length = 0;
       results.localStorage.length = 0;
       results.indexedDB.length = 0;
       results.carriers.length = 0;
-      diagnose();
+      activeRun = diagnose();
     });
     close.addEventListener('click', () => panel.remove());
     buttons.append(copy, rerun, close);
     panel.append(buttons);
     document.body.append(panel);
     render();
+    setRunState('AGUARDANDO', 'diagnóstico iniciando');
   };
 
   const withTimeout = (promise, milliseconds, label) => new Promise((resolve, reject) => {
@@ -289,9 +325,9 @@
     } catch (error) {
       const timedOut = String(error?.message || '').includes('Timeout');
       if (timedOut) controller?.abort();
-      add('json', 'fetch', 'FAIL', `${timedOut ? 'Timeout diagnóstico' : 'Requisição rejeitada'} (${error?.name || 'Error'})`);
-      add('json', 'HTTP / response status', 'NOT_TESTED', 'Nenhuma resposta recebida');
-      add('json', 'Marker / bookId', 'NOT_TESTED', 'Nenhuma resposta');
+      add('json', 'fetch', 'FAIL', `${timedOut ? 'Timeout diagnóstico' : 'Requisição rejeitada'} (${error?.name || 'Error'}: ${error?.message || 'sem detalhe'})`);
+      add('json', 'HTTP / response status', 'NOT_TESTED', `Sem resposta; ${error?.message || 'erro sem detalhe'}`);
+      add('json', 'Marker / bookId', 'NOT_TESTED', 'Sem resposta após falha/timeout');
     }
   };
 
@@ -309,7 +345,16 @@
   };
 
   const diagnoseLocalStorage = () => {
-    if (typeof localStorage === 'undefined') {
+    let storage;
+    try { storage = globalThis.localStorage; } catch (error) {
+      add('localStorage', 'Available', 'FAIL', `Acesso lançou ${error?.name || 'Error'}: ${error?.message || 'sem detalhe'}`);
+      add('localStorage', 'Write/read', 'NOT_TESTED', 'API inacessível');
+      add('localStorage', 'Previous value', 'NOT_TESTED', 'API inacessível');
+      add('localStorage', 'Chapter persistence', 'NOT_TESTED', 'API inacessível');
+      add('localStorage', 'App restart persistence', 'NOT_TESTED', 'Verificação manual necessária');
+      return;
+    }
+    if (!storage) {
       add('localStorage', 'typeof localStorage', 'FAIL', typeof localStorage);
       add('localStorage', 'Available', 'FAIL', 'API ausente');
       add('localStorage', 'Write/read', 'NOT_TESTED', '');
@@ -324,26 +369,26 @@
     const key = storageKey(bookId);
     const disposableKey = `${STORAGE_PREFIX}:cleanup-probe:${bookId}`;
     try {
-      const previous = localStorage.getItem(key);
+      const previous = storage.getItem(key);
       const prior = summarizeStoredRecord(previous, bookId);
       add('localStorage', 'Previous value', prior.status, prior.detail);
       const record = JSON.stringify({ bookId, marker: expectedMarker, chapterId, savedAt: new Date().toISOString() });
-      localStorage.setItem(key, record);
-      const readBack = localStorage.getItem(key);
+      storage.setItem(key, record);
+      const readBack = storage.getItem(key);
       const valid = readBack === record;
       add('localStorage', 'Write/read', valid ? 'PASS' : 'FAIL', valid ? 'Registro sintético validado' : 'Divergência após gravação');
       const priorChapter = previous ? JSON.parse(previous)?.chapterId : null;
-      add('localStorage', 'Chapter persistence', priorChapter && priorChapter !== chapterId ? 'PASS' : 'NOT_TESTED', priorChapter && priorChapter !== chapterId ? `Valor de ${priorChapter} visível neste capítulo` : 'Trocar capítulo e repetir');
+      add('localStorage', 'Chapter persistence', priorChapter && priorChapter !== chapterId ? 'PASS' : 'NOT_TESTED', priorChapter && priorChapter !== chapterId ? `Registro recuperado antes da escrita atual: ${priorChapter}` : 'Sem registro anterior de outro capítulo; trocar capítulo e repetir');
       add('localStorage', 'App restart persistence', 'NOT_TESTED', 'Fechar/forçar parada e abrir novamente');
 
-      localStorage.setItem(disposableKey, 'remove-probe');
-      const disposableRead = localStorage.getItem(disposableKey) === 'remove-probe';
-      localStorage.removeItem(disposableKey);
-      const disposableRemoved = localStorage.getItem(disposableKey) === null;
+      storage.setItem(disposableKey, 'remove-probe');
+      const disposableRead = storage.getItem(disposableKey) === 'remove-probe';
+      storage.removeItem(disposableKey);
+      const disposableRemoved = storage.getItem(disposableKey) === null;
       add('localStorage', 'Disposable-key cleanup', disposableRead && disposableRemoved ? 'PASS' : 'FAIL', 'Somente a chave POC descartável foi removida');
 
       if (otherBookId) {
-        const otherRaw = localStorage.getItem(storageKey(otherBookId));
+        const otherRaw = storage.getItem(storageKey(otherBookId));
         const otherProbe = summarizeStoredRecord(otherRaw, otherBookId);
         add('localStorage', 'Other-book namespace', otherProbe.status, otherProbe.detail);
         add('localStorage', 'Origin isolation', 'UNKNOWN', otherRaw ? 'Chave do outro livro legível: namespace não é isolamento de origem' : 'Ausência de chave não prova isolamento de origem');
@@ -352,11 +397,12 @@
         add('localStorage', 'Origin isolation', 'UNKNOWN', '');
       }
     } catch (error) {
-      add('localStorage', 'Write/read', 'FAIL', `Erro (${error?.name || 'Error'})`);
-      add('localStorage', 'Chapter persistence', 'NOT_TESTED', '');
-      add('localStorage', 'App restart persistence', 'NOT_TESTED', '');
-      add('localStorage', 'Namespace / cross-book probe', 'UNKNOWN', '');
-      add('localStorage', 'Origin isolation', 'UNKNOWN', '');
+      add('localStorage', 'Write/read', 'FAIL', `Erro ${error?.name || 'Error'}: ${error?.message || 'sem detalhe'}`);
+      add('localStorage', 'Previous value', 'NOT_TESTED', 'Falha antes de concluir a leitura');
+      add('localStorage', 'Chapter persistence', 'NOT_TESTED', 'Falha durante a operação');
+      add('localStorage', 'App restart persistence', 'NOT_TESTED', 'Verificação manual necessária');
+      add('localStorage', 'Namespace / cross-book probe', 'NOT_TESTED', 'Falha durante a operação');
+      add('localStorage', 'Origin isolation', 'UNKNOWN', 'Não medido');
     }
   };
 
@@ -465,7 +511,7 @@
         ? summarizeStoredRecord(JSON.stringify(result.prior), bookId)
         : { status: 'NOT_TESTED', detail: 'Sem valor anterior' };
       add('indexedDB', 'Previous value', prior.status, prior.detail);
-      add('indexedDB', 'Chapter persistence', result.prior?.chapterId && result.prior.chapterId !== chapterId ? 'PASS' : 'NOT_TESTED', result.prior?.chapterId && result.prior.chapterId !== chapterId ? `Valor de ${result.prior.chapterId} visível neste capítulo` : 'Trocar capítulo e repetir');
+      add('indexedDB', 'Chapter persistence', result.prior?.chapterId && result.prior.chapterId !== chapterId ? 'PASS' : 'NOT_TESTED', result.prior?.chapterId && result.prior.chapterId !== chapterId ? `Registro recuperado antes da escrita atual: ${result.prior.chapterId}` : 'Sem registro anterior de outro capítulo; trocar capítulo e repetir');
       add('indexedDB', 'App restart persistence', 'NOT_TESTED', 'Fechar/forçar parada e abrir novamente');
 
       if (otherBookId) {
@@ -481,11 +527,11 @@
         add('indexedDB', 'Origin isolation', 'UNKNOWN', '');
       }
     } catch (error) {
-      add('indexedDB', 'Open / write/read', 'FAIL', `Erro (${error?.name || 'Error'})`);
-      add('indexedDB', 'Previous value', 'NOT_TESTED', '');
-      add('indexedDB', 'Chapter persistence', 'NOT_TESTED', '');
-      add('indexedDB', 'App restart persistence', 'NOT_TESTED', '');
-      add('indexedDB', 'Origin isolation', 'UNKNOWN', '');
+      add('indexedDB', 'Open / write/read', 'FAIL', `Erro ${error?.name || 'Error'}: ${error?.message || 'sem detalhe'}`);
+      add('indexedDB', 'Previous value', 'NOT_TESTED', 'Operação de abertura/leitura falhou');
+      add('indexedDB', 'Chapter persistence', 'NOT_TESTED', 'Operação falhou; não inferir persistência');
+      add('indexedDB', 'App restart persistence', 'NOT_TESTED', 'Verificação manual necessária');
+      add('indexedDB', 'Origin isolation', 'UNKNOWN', 'Não medido');
     } finally {
       try { database?.close(); } catch { /* noop */ }
     }
@@ -507,6 +553,12 @@
   const diagnose = async () => {
     if (diagnosing) return;
     diagnosing = true;
+    const thisRun = ++runNumber;
+    setRunState('EM ANDAMENTO', `execução ${thisRun}`);
+    add('chapter', 'Book identity', expectedMarker === 'UNKNOWN' ? 'FAIL' : 'PASS', bookId);
+    add('chapter', 'Chapter identity', chapterId === 'UNKNOWN' ? 'FAIL' : 'PASS', chapterId);
+    add('chapter', 'Chapter marker', chapterMarker === 'UNKNOWN' ? 'FAIL' : 'PASS', chapterMarker);
+    render();
     try {
       add('environment', 'Book identity', expectedMarker === 'UNKNOWN' ? 'FAIL' : 'PASS', bookId);
       add('environment', 'Chapter identity', chapterId === 'UNKNOWN' ? 'FAIL' : 'PASS', chapterId);
@@ -521,13 +573,32 @@
       const jsonPromise = diagnoseJson();
       const indexedDbPromise = diagnoseIndexedDB();
       render();
-      await Promise.allSettled([jsonPromise, indexedDbPromise]);
+      const settled = await Promise.allSettled([jsonPromise, indexedDbPromise]);
+      for (const [index, result] of settled.entries()) {
+        if (result.status === 'rejected') {
+          const section = index === 0 ? 'json' : 'indexedDB';
+          add(section, 'Unhandled diagnostic error', 'FAIL', `${result.reason?.name || 'Error'}: ${result.reason?.message || 'sem detalhe'}`);
+        }
+      }
+      finalizeEmptySections();
       render();
+      setRunState('CONCLUIDO', `execução ${thisRun}; relatório já pode ser copiado`);
+    } catch (error) {
+      for (const section of ['json', 'localStorage', 'indexedDB', 'chapter']) {
+        if (!results[section].some(item => item.status === 'FAIL')) {
+          add(section, 'Unhandled diagnostic error', 'FAIL', `${error?.name || 'Error'}: ${error?.message || 'sem detalhe'}`);
+        }
+      }
     } finally {
       diagnosing = false;
+      if (thisRun === runNumber) {
+        finalizeEmptySections();
+        render();
+        setRunState('CONCLUIDO', `execução ${thisRun}`);
+      }
     }
   };
 
   showPanel();
-  void diagnose();
+  activeRun = diagnose();
 })();

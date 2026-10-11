@@ -172,6 +172,16 @@ assert(!/https?:\/\//.test(customJs), 'Custom Code has no literal remote URL');
 assert(customJs.includes("resolved.protocol !== 'file:'"), 'fetch is gated to a local file URL');
 assert(!customJs.includes('indexedDB.deleteDatabase'), 'Custom Code never deletes an IndexedDB database');
 assert(customJs.includes('removeItem(disposableKey)'), 'only the explicitly disposable localStorage key is removed');
+assert(customJs.includes("['chapter', 'CHAPTER']"), 'chapter results have a rendered report section');
+assert(customJs.includes("['json', 'localStorage', 'indexedDB', 'chapter']"), 'empty asynchronous/storage sections are finalized explicitly');
+assert(customJs.includes('await activeRun'), 'copy waits for the active asynchronous diagnostic');
+assert(customJs.includes("setRunState('EM ANDAMENTO'"), 'panel exposes an in-progress status');
+assert(customJs.includes("setRunState('CONCLUIDO'"), 'panel exposes a completed status');
+assert(customJs.includes('Promise.allSettled([jsonPromise, indexedDbPromise])'), 'JSON and IndexedDB completion/errors are awaited');
+assert(customJs.includes('FETCH_TIMEOUT_MS') && customJs.includes('STORAGE_TIMEOUT_MS'), 'network/file and storage operations have explicit timeouts');
+assert(customJs.includes('priorChapter && priorChapter !== chapterId'), 'localStorage cross-chapter result uses a previously read record');
+assert(customJs.includes('result.prior?.chapterId && result.prior.chapterId !== chapterId'), 'IndexedDB cross-chapter result uses a previously read record');
+assert(css.includes('.nf-poc-run-state'), 'CSS styles the execution indicator');
 
 process.stdout.write('PASS: both EPUB ZIP archives, CRCs, mimetype, OPF references, spine, JSON, chapter markers, distinct identities, generated PNG, CSS, Custom Code syntax and safety guards validated.\n');
 process.stdout.write('LIMITATION: structural checks are not EPUBCheck and do not replace import/render/storage tests on Android.\n');

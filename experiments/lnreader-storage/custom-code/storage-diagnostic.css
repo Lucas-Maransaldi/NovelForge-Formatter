@@ -34,6 +34,20 @@
   font-weight: 700 !important;
 }
 
+#nf-storage-poc-panel .nf-poc-run-state {
+  margin: 4px 0 !important;
+  padding: 4px 6px !important;
+  border-radius: 4px !important;
+  background: #55420f !important;
+  color: #ffe29a !important;
+  font-weight: 700 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-run-state[data-state="concluido"] {
+  background: #123d28 !important;
+  color: #a8f0c0 !important;
+}
+
 #nf-storage-poc-panel .nf-poc-identity,
 #nf-storage-poc-panel .nf-poc-location,
 #nf-storage-poc-panel .nf-poc-detail {
