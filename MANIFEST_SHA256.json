@@ -79,6 +79,7 @@
   "knowledge/v1/books/overgeared/entities/event/rescue-the-earls-esteemed-daughter/data.json": "d318c695930ba6f7891838a74504873d7e954a7c26138f9d6286932ed635f999",
   "knowledge/v1/books/overgeared/entities/event/rescue-the-earls-esteemed-daughter/manifest.json": "d6f7a43f80c93eebb9029b760e0f96f5289afd0430aaa93651f080d38ab0bbb4",
   "knowledge/v1/books/overgeared/latest.TEMPLATE.json": "8e3df0da368ec8c002c5c9bcdad1e49a023510d3c6998bf9d6c652e45a70aa79",
+  "knowledge/v1/books/overgeared/latest.json": "bef1f94617cb62beaea39df98c47f11e7424d5e8a911d4d7f9d3d63e2f41ab8a",
   "package.json": "5e4dab4b838914ba07a55236eb6faf1d8761237e1ac324008c10241ac78bb37d",
   "scripts/build-dist.js": "f5c8d952768f2d0f47760583a5423b9aa6994f17feb36ab740fa6c9ce4833971",
   "scripts/lnreader-diagnostic.js": "2a518d2bae0a89d5f601839453503ad9608b271b52da1ff91b86fdf0a8c7c827",
