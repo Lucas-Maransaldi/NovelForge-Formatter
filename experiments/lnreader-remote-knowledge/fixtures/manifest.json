@@ -1,0 +1,8 @@
+{
+  "schema": "nf-knowledge-manifest-poc-v1",
+  "bookId": "nf-overgeared-poc",
+  "revision": "fixture-r1",
+  "knowledgePath": "braham.json",
+  "sha256": "6d39b9d973b52937363e46ba50874bf356ee5dcf4d1f0c29ffca75e81c58c797",
+  "byteLength": 614
+}

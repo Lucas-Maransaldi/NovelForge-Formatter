@@ -1,0 +1,23 @@
+{
+  "schema": "nf-knowledge-poc-v1",
+  "bookId": "nf-overgeared-poc",
+  "entityId": "character:braham",
+  "name": "Braham Synthetic",
+  "facts": [
+    {
+      "id": "fact-001",
+      "revealedAt": { "chapter": 100, "block": 10 },
+      "text": "Synthetic fact revealed at chapter 100, block 10."
+    },
+    {
+      "id": "fact-002",
+      "revealedAt": { "chapter": 450, "block": 20 },
+      "text": "Synthetic fact revealed at chapter 450, block 20."
+    },
+    {
+      "id": "fact-003",
+      "revealedAt": { "chapter": 900, "block": 5 },
+      "text": "Synthetic future fact for spoiler filtering."
+    }
+  ]
+}

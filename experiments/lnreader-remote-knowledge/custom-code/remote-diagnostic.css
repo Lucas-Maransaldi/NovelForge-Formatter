@@ -1,0 +1,34 @@
+/* Optional separate Custom CSS snippet for the C5.4 diagnostic panel. */
+#nf-remote-knowledge-poc-panel {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  inset: auto 8px 8px 8px !important;
+  max-height: 55vh !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
+  border: 1px solid #75a9dc !important;
+  border-radius: 8px !important;
+  background: #101820 !important;
+  color: #f4f7fa !important;
+  font: 12px/1.35 sans-serif !important;
+  text-align: left !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#nf-remote-knowledge-poc-panel * { box-sizing: border-box !important; color: inherit !important; font-family: sans-serif !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-title { margin-bottom: 5px !important; color: #9bc8ff !important; font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-meta,
+#nf-remote-knowledge-poc-panel .nf-rk-detail { overflow-wrap: anywhere !important; color: #c5d0da !important; font-size: 10px !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-state { margin: 5px 0 !important; padding: 5px !important; background: #55420f !important; color: #ffe29a !important; font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-state[data-state="conclu-do"] { background: #123d28 !important; color: #a8f0c0 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-row { display: flex !important; flex-wrap: wrap !important; gap: 3px 8px !important; padding: 2px 0 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-label { min-width: 145px !important; overflow-wrap: anywhere !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-status { font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-pass { color: #89e0aa !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-fail { color: #ff9696 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-unknown,
+#nf-remote-knowledge-poc-panel .nf-rk-not_tested { color: #f1cf82 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-detail { flex-basis: 100% !important; padding-left: 6px !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-buttons { display: flex !important; flex-wrap: wrap !important; gap: 6px !important; margin-top: 8px !important; }
+#nf-remote-knowledge-poc-panel button { min-height: 36px !important; padding: 6px 9px !important; border: 1px solid #7891a8 !important; border-radius: 5px !important; background: #263746 !important; font-size: 11px !important; }
