@@ -33,3 +33,11 @@ Nenhum teste automatizado substitui validação Android. A fixture contém fatos
 - Cada clique recarrega o índice do capítulo e consulta apenas pela API C2.1; contexto inconsistente falha fechado.
 - Integridade: `npm run manifest:verify`; atualizar deliberadamente com `npm run manifest:generate`.
 - O gatilho de execução por capítulo permanece hipótese até validação Android (`docs/ANDROID_VALIDATION.md`).
+
+## C5.6 — Remote Knowledge em produção
+
+- Unidade: discovery/manifest/resource mockados, sem rede real; testes de TLS URL allowlist, status/redirect/timeout, limites de bytes, digest Web Crypto e fallback JS, schema, identidades, proveniência e caminho canônico.
+- Antisspoiler: pontos exatos, bloco anterior/seguinte, capítulo futuro, input inválido, mudança de posição, cache re-filtrado, nunca retornar fato futuro no resultado público.
+- UI oficial: LOADING/READY/EMPTY/ERROR, falha sem fallback C2, link comum e entidade não suportada preservados, link sem metadado não gera navegação em branco, fechamento/cancelamento/resultado atrasado e integração do bundle gerado.
+- Regressão: testes existentes de CSS/janelas, quest multiparágrafo, SYSTEM não aninhado, texto/atributos intactos e reexecução.
+- Android: instalação do bundle oficial com EPUB de produção marcado e dados remotos reais publicados. Sem estes artefatos, casos remotos são PENDING; evidência POC C5.4.1/C5.5 não substitui este teste.

@@ -3,6 +3,7 @@ const path = require('node:path');
 
 const source = path.resolve(__dirname, '..', 'src', 'formatter.js');
 const contextIndex = path.resolve(__dirname, '..', 'src', 'context-index.js');
+const remoteKnowledge = path.resolve(__dirname, '..', 'src', 'remote-knowledge.js');
 const contextualUI = path.resolve(__dirname, '..', 'src', 'contextual-ui.js');
 const css = path.resolve(__dirname, '..', 'src', 'formatter.css');
 const uiCss = path.resolve(__dirname, '..', 'src', 'contextual-ui.css');
@@ -14,6 +15,7 @@ const outputLNReader = path.join(outputDir, 'novelforge-lnreader.js');
 fs.mkdirSync(outputDir, { recursive: true });
 const sourceText = fs.readFileSync(source, 'utf8');
 const contextText = fs.readFileSync(contextIndex, 'utf8');
+const remoteText = fs.readFileSync(remoteKnowledge, 'utf8');
 const uiText = fs.readFileSync(contextualUI, 'utf8');
 const cssText = JSON.stringify(fs.readFileSync(css, 'utf8'));
 const uiCssText = JSON.stringify(fs.readFileSync(uiCss, 'utf8'));
@@ -29,6 +31,6 @@ fs.writeFileSync(
 );
 fs.writeFileSync(
   outputLNReader,
-  header + contextText + '\n' + embeddedSource + '\n' + embeddedUI + '\n' + fs.readFileSync(adapter, 'utf8'),
+  header + contextText + '\n' + remoteText + '\n' + embeddedSource + '\n' + embeddedUI + '\n' + fs.readFileSync(adapter, 'utf8'),
   'utf8'
 );

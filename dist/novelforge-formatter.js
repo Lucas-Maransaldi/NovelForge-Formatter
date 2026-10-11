@@ -1,4 +1,4 @@
-/* NovelForge LNReader Formatter v0.4.0 | generated artifact. */
+/* NovelForge LNReader Formatter v0.5.0 | generated artifact. */
 /* NovelForge C2 — offline contextual index reader. */
 (function (global) {
   'use strict';
@@ -174,8 +174,9 @@
   const WINDOW_SELECTOR = '.nf-window[data-nf-id][data-nf-category][data-nf-subtype]';
   const STYLE_ID = 'nf-formatter-styles';
   // The source build receives CSS from src/formatter.css. The distribution
-  // build replaces this global hook with the CSS text, so LNReader still gets
-  // one self-contained script and no runtime import/fetch is needed.
+  // build replaces this hook with CSS text. The visual formatter stays
+  // network-independent; contextual Knowledge requests are isolated in the
+  // optional production client and happen only after a semantic entity tap.
   const FORMATTER_CSS = "/* NovelForge C1.1: presentation only; semantic EPUB markup remains authoritative. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype] {\n  margin: 1.2em 0; padding: 1em 1.15em; border: 2px solid #a77b28;\n  border-left: 5px solid #d6ab4d; border-radius: .65em;\n  background: rgba(160, 120, 32, .10); break-inside: avoid;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype]::before {\n  content: \"QUEST\"; display: block; font-weight: 700;\n  letter-spacing: .08em; color: #a67b20; margin-bottom: .65em;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SYSTEM\"][data-nf-subtype] {\n  margin: 1em 0; padding: .85em 1em; border: 1px solid #777;\n  border-left: 4px solid #555; border-radius: .4em;\n  background: rgba(127, 127, 127, .10); break-inside: avoid;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SYSTEM\"][data-nf-subtype]::before {\n  content: \"SYSTEM\"; display: block; font-weight: 700;\n  letter-spacing: .08em; opacity: .8; margin-bottom: .5em;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"] .nf-delimiter { display: none; }\n@media (prefers-color-scheme: dark) {\n  .nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype] {\n    background: rgba(208, 160, 54, .13); border-color: #cba24d;\n  }\n  .nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype]::before { color: #e5bd67; }\n}\n";
 
   function isDescendantOfWindow(node) {

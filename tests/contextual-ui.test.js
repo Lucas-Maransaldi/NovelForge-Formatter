@@ -79,7 +79,7 @@ function makeFixture(options = {}) {
   const article = document.createElement('article');
   article.className = 'nf-chapter';
   article.setAttribute('data-nf-chapter', options.chapterId || 'c1');
-  article.setAttribute('data-nf-novel', 'novel');
+  article.setAttribute('data-nf-novel', options.novelId || 'novel');
   article.setAttribute('data-nf-schema', '1');
   container.appendChild(article);
 
@@ -312,6 +312,84 @@ test('clique recarrega o índice e não reutiliza contexto já alterado', () => 
   assert.doesNotMatch(dialog.textContent, /Future secret\./);
 });
 
+test('popup oficial integra consulta remota, LOADING/READY e só mostra fatos recebidos', async () => {
+  const fixture = makeFixture({ chapterId:'889', novelId:'overgeared' });
+  fixture.article.children[0].setAttribute('data-nf-block','b0042');
+  const priorRemote = global.NovelForgeRemoteKnowledge;
+  const requests = [];
+  global.NovelForgeRemoteKnowledge = { queryEntity(context) {
+    requests.push(context);
+    return Promise.resolve({ ok:true, value:{ revision:'r-test', facts:[{id:'allowed',text:'Remote allowed fact.',provenance:{chapter:100,block:10,blockId:'b00010'}}] } });
+  } };
+  try {
+    assert.equal(global.NovelForgeContextualUI.initialize(fixture.container).mode,'remote');
+    const result=click(fixture,fixture.character);
+    assert.equal(result.defaultPrevented,true);
+    assert.match(findId(fixture.document.body,'nf-contextual-ui').textContent,/Consultando a enciclopédia/);
+    await new Promise(resolve=>setImmediate(resolve));
+    const dialog=findId(fixture.document.body,'nf-contextual-ui');
+    assert.match(dialog.textContent,/Remote allowed fact\./);
+    assert.match(dialog.textContent,/REMOTE KNOWLEDGE · Revisão r-test/);
+    assert.equal(requests[0].bookId,'overgeared');
+    assert.equal(requests[0].chapter,889);
+    assert.equal(requests[0].block,42);
+  } finally {
+    if(priorRemote===undefined) delete global.NovelForgeRemoteKnowledge;
+    else global.NovelForgeRemoteKnowledge=priorRemote;
+  }
+});
+
+test('popup remoto falha fechado para metadata desconhecido e nunca cai no índice local', async () => {
+  const fixture=makeFixture({chapterId:'poc-source-unknown',novelId:'overgeared'});
+  const priorRemote=global.NovelForgeRemoteKnowledge;
+  let calls=0;
+  global.NovelForgeRemoteKnowledge={queryEntity(){calls++;return Promise.resolve({ok:true,value:{facts:[{text:'must not appear'}]}});}};
+  try {
+    assert.equal(global.NovelForgeContextualUI.initialize(fixture.container).mode,'remote');
+    const result=click(fixture,fixture.character);
+    assert.equal(result.defaultPrevented,true);
+    const dialog=findId(fixture.document.body,'nf-contextual-ui');
+    assert.match(dialog.textContent,/Enciclopédia indisponível/);
+    assert.doesNotMatch(dialog.textContent,/Known fact\.|must not appear/);
+    assert.equal(calls,0);
+  } finally {
+    if(priorRemote===undefined) delete global.NovelForgeRemoteKnowledge;
+    else global.NovelForgeRemoteKnowledge=priorRemote;
+  }
+});
+
+test('popup remoto mantém links comuns e entidades não suportadas intactos', () => {
+  const fixture=makeFixture({chapterId:'889',novelId:'overgeared'});
+  const normal=fixture.document.createElement('a'); normal.setAttribute('href','chapter-2.xhtml'); normal.textContent='normal';
+  fixture.article.children[0].appendChild(normal);
+  const prior=global.NovelForgeRemoteKnowledge;
+  global.NovelForgeRemoteKnowledge={queryEntity(){throw new Error('must not query');}};
+  try {
+    global.NovelForgeContextualUI.initialize(fixture.container);
+    assert.equal(click(fixture,normal).defaultPrevented,false);
+    fixture.character.setAttribute('data-nf-entity','location:unknown');
+    assert.equal(click(fixture,fixture.character).defaultPrevented,false);
+  } finally { if(prior===undefined)delete global.NovelForgeRemoteKnowledge;else global.NovelForgeRemoteKnowledge=prior; }
+});
+
+test('resposta remota atrasada não reabre popup após fechar ou trocar contexto', async () => {
+  const fixture=makeFixture({chapterId:'889',novelId:'overgeared'});
+  fixture.article.children[0].setAttribute('data-nf-block','b0042');
+  const prior=global.NovelForgeRemoteKnowledge;
+  let resolveQuery;
+  global.NovelForgeRemoteKnowledge={queryEntity(){return new Promise(resolve=>{resolveQuery=resolve;});}};
+  try {
+    global.NovelForgeContextualUI.initialize(fixture.container);
+    click(fixture,fixture.character);
+    await Promise.resolve();
+    const dialog=findId(fixture.document.body,'nf-contextual-ui');
+    byText(dialog,'Fechar').listeners.click[0]({});
+    resolveQuery({ok:true,value:{revision:'r-late',facts:[{id:'future',text:'late data'}]}});
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(findId(fixture.document.body,'nf-contextual-ui'),null);
+  } finally { if(prior===undefined)delete global.NovelForgeRemoteKnowledge;else global.NovelForgeRemoteKnowledge=prior; }
+});
+
 test('índice alterado para outro capítulo falha fechado no clique', () => {
   const fixture = makeFixture();
   global.NovelForgeContextualUI.initialize(fixture.container);
@@ -329,12 +407,15 @@ test('bundle LNReader inclui UI/CSS autocontidos sem rede ou imports', () => {
   const bundle = fs.readFileSync(path.resolve(__dirname, '..', 'dist', 'novelforge-lnreader.js'), 'utf8');
   assert.match(bundle, /NovelForgeContextualUI/);
   assert.match(bundle, /nf-contextual-ui-styles/);
+  assert.match(bundle, /NovelForgeRemoteKnowledge/);
   assert.match(bundle, /role/);
   assert.doesNotMatch(bundle, /\bimport\s|\bexport\s|\brequire\s*\(/);
-  assert.doesNotMatch(bundle, /fetch\s*\(|https?:\/\//i);
+  assert.match(bundle, /fetch\s*\(/);
+  assert.match(bundle, /https:\/\/cdn\.jsdelivr\.net\/gh\/Lucas-Maransaldi\/NovelForge-Formatter/);
+  assert.doesNotMatch(bundle, /fetch\(['"]\//i, 'production client must not use document-relative URLs');
 });
 
-test('artefato completo inicia UI automaticamente pelo adaptador LNReader', () => {
+test('bundle oficial usa somente Knowledge remoto e não cai no índice local em erro', async () => {
   const fixture = makeFixture();
   const previousDocument = global.document;
   const previousWindow = global.window;
@@ -347,8 +428,9 @@ test('artefato completo inicia UI automaticamente pelo adaptador LNReader', () =
     assert.equal((fixture.article.listeners.click || []).length, 1);
     const result = click(fixture, fixture.character);
     assert.equal(result.defaultPrevented, true);
-    assert.match(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Known fact\./);
-    assert.doesNotMatch(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Future secret\./);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.match(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Enciclopédia indisponível/);
+    assert.doesNotMatch(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Known fact\.|Future secret\./);
   } finally {
     const state = global.__novelforgeContextualUIState;
     if (state && state.cleanup) state.cleanup();

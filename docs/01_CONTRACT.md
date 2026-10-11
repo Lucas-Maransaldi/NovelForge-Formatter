@@ -25,3 +25,11 @@ Delimitadores redundantes (como `[` e `]`) podem ser ocultados visualmente quand
 - Script em EPUB local: confirmado pelo usuário.
 - APIs e formato de execução do custom script LNReader: **não documentados neste pacote**; Codex deve observar script existente/ambiente do usuário, não inventar integração.
 - Links para outro XHTML: falharam no LNReader testado; não basear a UI contextual nessa navegação.
+
+## Adendo C5.6 — Remote Knowledge
+
+A integração remota de enciclopédia é uma decisão complementar, versionada em [NF-RK-001](contracts/NF-RK-001.md) e [C5.6 Remote Knowledge](decisions/C5_6_REMOTE_KNOWLEDGE.md). Ela substitui somente a fonte de dados do popup de produção; não altera marcadores de janelas nem embute o índice mestre no EPUB. NF-011 permanece como histórico e as regras locais C2 continuam disponíveis para consumidores que as usem explicitamente, mas o popup remoto oficial não faz fallback local.
+
+O ID de produção configurado é `overgeared`; consultas exigem `data-nf-novel`, capítulo numérico e bloco `bNNNN` explícitos. Identidade ou posição ausente/inválida significa nenhuma consulta/fato remoto. O cliente não infere atributos, não depende de APIs privadas do LNReader e não faz fetch durante a inicialização visual.
+
+A consulta é online-only fora do cache temporário em memória de registros já validados. Ausência de endpoint/dados ou falha de rede mantém formatter/CSS funcionando e mostra indisponibilidade no popup. Não existe dataset real publicado nesta versão; a resposta remota deve permanecer indisponível até publicação autorizada conforme [o procedimento](REMOTE_KNOWLEDGE_PUBLISHING.md).

@@ -117,10 +117,12 @@ test('reexecução após troca de capítulo injeta sem duplicar estilo nem alter
   assert.equal(replacement.quest.getAttribute('data-nf-category'), 'QUEST');
 });
 
-test('bundle não usa imports, rede ou reconstrução via innerHTML', () => {
+test('bundle não usa imports/código remoto nem reconstrução via innerHTML; Knowledge usa HTTPS permitido', () => {
   const bundle = fs.readFileSync(path.resolve(__dirname, '..', 'dist', 'novelforge-lnreader.js'), 'utf8');
   assert.doesNotMatch(bundle, /\bimport\s|\bexport\s|\brequire\s*\(/);
-  assert.doesNotMatch(bundle, /fetch\s*\(|https?:\/\//i);
+  assert.match(bundle, /fetch\s*\(/);
+  assert.match(bundle, /https:\/\/cdn\.jsdelivr\.net\/gh\/Lucas-Maransaldi\/NovelForge-Formatter/);
+  assert.doesNotMatch(bundle, /fetch\(['"]\//i);
   assert.doesNotMatch(bundle, /innerHTML\s*=/);
 });
 

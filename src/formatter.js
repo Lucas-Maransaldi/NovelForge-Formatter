@@ -4,8 +4,9 @@
   const WINDOW_SELECTOR = '.nf-window[data-nf-id][data-nf-category][data-nf-subtype]';
   const STYLE_ID = 'nf-formatter-styles';
   // The source build receives CSS from src/formatter.css. The distribution
-  // build replaces this global hook with the CSS text, so LNReader still gets
-  // one self-contained script and no runtime import/fetch is needed.
+  // build replaces this hook with CSS text. The visual formatter stays
+  // network-independent; contextual Knowledge requests are isolated in the
+  // optional production client and happen only after a semantic entity tap.
   const FORMATTER_CSS = global.NovelForgeFormatterCSS || '';
 
   function isDescendantOfWindow(node) {

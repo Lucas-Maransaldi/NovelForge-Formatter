@@ -54,6 +54,21 @@ Estado inicial de todos os casos: **PENDING**. Preencha “Observado” somente 
 | A48 | Avançar/retornar com diagnóstico instalado | Registrar contador e persistência entre execuções | — | PENDING |
 | A49 | Usar “Sample current DOM” após troca sem reexecução observável | Mudanças estruturais desde amostra são indicadas | — | PENDING |
 | A50 | Acionar “Remove diagnostic” | Badge desaparece; script pode ser removido das configurações | — | PENDING |
+| A51 | Instalar somente `dist/novelforge-lnreader.js` C5.6 | Sem Custom Code C5.5 separado; bundle executa | — | PENDING |
+| A52 | Abrir capítulo sem rede e conferir janelas/estilos | Formatação visual preservada, sem request no startup | — | PENDING |
+| A53 | Abrir EPUB sem `data-nf-novel` confiável | Sem fatos remotos; narrativa/formatação continuam | — | PENDING |
+| A54 | Tocar entidade character com capítulo/bloco ausente ou não numérico | Popup ERROR, nenhum fetch/fato e sem navegação em branco | — | PENDING |
+| A55 | Consultar livro `overgeared` enquanto não houver revisão real publicada | ERROR amigável, sem fallback ao C2/C5.4 sintético | — | PENDING |
+| A56 | Confirmar URLs e identidade no diagnóstico de rede do WebView, se disponível | Apenas HTTPS para repositório/CDN configurados, sem credenciais/redirect | — | PENDING |
+| A57 | Confirmar presença de `article.nf-chapter`, `data-nf-novel`, `data-nf-chapter`, `p[data-nf-block]`, `data-nf-entity` no DOM sanitizado | Todos os metadados usados pela consulta permanecem intactos | — | PENDING |
+| A58 | Após publicação explícita de dados reais, tocar Braham em posição com fatos revelados | Popup READY mostra apenas fatos validados daquela posição | — | PENDING |
+| A59 | Tocar antes e exatamente no bloco de revelação real | Bloco anterior omite; limite exato inclui o fato | — | PENDING |
+| A60 | Cortar rede antes do primeiro acesso sem cache válido | ERROR, leitura e CSS continuam funcionais | — | PENDING |
+| A61 | Fazer query válida e tocar depois em outra posição no mesmo script | Filtro é reaplicado; fatos da consulta anterior não contaminam o resultado | — | PENDING |
+| A62 | Tocar rapidamente em duas entidades e fechar durante loading | Só requisição atualiza popup; fechamento cancela/ignora resposta tardia | — | PENDING |
+| A63 | Conferir link comum e entidade não suportada | Href/navegação original não é interceptado | — | PENDING |
+| A64 | Conferir Custom Code após navegação/reabertura de capítulos | Sem listeners/popup duplicados; contexto anterior não reaparece | — | PENDING |
+| A65 | Reiniciar leitor/aplicativo e testar sem rede | Sem promessa de persistência offline; cache é apenas da sessão do script | — | PENDING |
 
 ## Registro de execução
 
