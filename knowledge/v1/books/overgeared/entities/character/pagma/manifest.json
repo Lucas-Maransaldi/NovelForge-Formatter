@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:pagma": {
+      "entityId": "character:pagma",
+      "resourcePath": "entities/character/pagma/data.json",
+      "byteLength": 757,
+      "sha256": "0bc1e11450f59b01f8c4f880710d145f45169001b954b094d251c8c70e5e5b1f"
+    }
+  }
+}

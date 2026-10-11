@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "character:ashur",
+  "facts": [
+    {
+      "id": "ashur-c0001-b0090",
+      "text": "Earl Ashur sent the narrator to one of the Eternal Kingdom’s five forbidden zones.",
+      "revealedAt": {
+        "chapter": 1,
+        "block": 90
+      },
+      "provenance": {
+        "chapter": 1,
+        "block": 90,
+        "blockId": "b0090"
+      }
+    },
+    {
+      "id": "ashur-c0002-b0002",
+      "text": "Ashur is a level 300 great magician who has completed his third class change.",
+      "revealedAt": {
+        "chapter": 2,
+        "block": 2
+      },
+      "provenance": {
+        "chapter": 2,
+        "block": 2,
+        "blockId": "b0002"
+      }
+    },
+    {
+      "id": "ashur-c0002-b0014",
+      "text": "Ashur wants Pagma’s rare book.",
+      "revealedAt": {
+        "chapter": 2,
+        "block": 14
+      },
+      "provenance": {
+        "chapter": 2,
+        "block": 14,
+        "blockId": "b0014"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:doran": {
+      "entityId": "character:doran",
+      "resourcePath": "entities/character/doran/data.json",
+      "byteLength": 766,
+      "sha256": "dce2102d4fa8848a8054bb0f07b1c546fb6609e793e4e9ceae75622990316cbb"
+    }
+  }
+}

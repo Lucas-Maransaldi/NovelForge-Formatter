@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:irene": {
+      "entityId": "character:irene",
+      "resourcePath": "entities/character/irene/data.json",
+      "byteLength": 457,
+      "sha256": "f9464ad4d609e14c8ee7aa5885731e2c05d0cb424c08e4892ba3aec6231f12a9"
+    }
+  }
+}

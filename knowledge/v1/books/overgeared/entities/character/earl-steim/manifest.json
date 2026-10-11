@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:earl-steim": {
+      "entityId": "character:earl-steim",
+      "resourcePath": "entities/character/earl-steim/data.json",
+      "byteLength": 718,
+      "sha256": "4f2f7bb96bf647b03a82ce591655b9b36f51f64dad88e0b565cf7accfd6cd89a"
+    }
+  }
+}

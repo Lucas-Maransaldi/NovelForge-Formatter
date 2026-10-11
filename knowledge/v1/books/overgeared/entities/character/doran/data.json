@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "character:doran",
+  "facts": [
+    {
+      "id": "doran-c0004-b0109",
+      "text": "Doran describes himself as a shadow who secretly protects Earl Steim.",
+      "revealedAt": {
+        "chapter": 4,
+        "block": 109
+      },
+      "provenance": {
+        "chapter": 4,
+        "block": 109,
+        "blockId": "b0109"
+      }
+    },
+    {
+      "id": "doran-c0005-b0023",
+      "text": "Doran persists in asking for help even after the narrator refuses the quest.",
+      "revealedAt": {
+        "chapter": 5,
+        "block": 23
+      },
+      "provenance": {
+        "chapter": 5,
+        "block": 23,
+        "blockId": "b0023"
+      }
+    }
+  ]
+}

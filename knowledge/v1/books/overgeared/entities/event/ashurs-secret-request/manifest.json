@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "event:ashurs-secret-request": {
+      "entityId": "event:ashurs-secret-request",
+      "resourcePath": "entities/event/ashurs-secret-request/data.json",
+      "byteLength": 475,
+      "sha256": "4b235789ab691a5634325e5821aeeac9b0c1d265476980a701423519805f9cd2"
+    }
+  }
+}

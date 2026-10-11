@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "character:grid",
+  "facts": [
+    {
+      "id": "grid-c0003-b0023",
+      "text": "Shin Youngwoo uses the player name Grid in Satisfy.",
+      "revealedAt": {
+        "chapter": 3,
+        "block": 23
+      },
+      "provenance": {
+        "chapter": 3,
+        "block": 23,
+        "blockId": "b0023"
+      }
+    }
+  ]
+}

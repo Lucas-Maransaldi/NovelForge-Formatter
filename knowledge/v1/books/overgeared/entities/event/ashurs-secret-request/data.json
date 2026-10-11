@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "event:ashurs-secret-request",
+  "facts": [
+    {
+      "id": "ashurs-secret-request-c0003-b0024",
+      "text": "Grid completed the prerequisites to receive Earl Ashur’s quest.",
+      "revealedAt": {
+        "chapter": 3,
+        "block": 24
+      },
+      "provenance": {
+        "chapter": 3,
+        "block": 24,
+        "blockId": "b0024"
+      }
+    }
+  ]
+}

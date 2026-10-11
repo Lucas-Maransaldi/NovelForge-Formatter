@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:lim-cheolho": {
+      "entityId": "character:lim-cheolho",
+      "resourcePath": "entities/character/lim-cheolho/data.json",
+      "byteLength": 796,
+      "sha256": "52fd2c2ebe6173fafe240c4897ce13ef1a14b0afea9dada1548dd1bdb70299db"
+    }
+  }
+}

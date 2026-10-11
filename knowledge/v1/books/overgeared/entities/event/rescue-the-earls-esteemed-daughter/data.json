@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "event:rescue-the-earls-esteemed-daughter",
+  "facts": [
+    {
+      "id": "rescue-the-earls-esteemed-daughter-c0004-b0112",
+      "text": "The quest “Rescue the Earl’s Esteemed Daughter” is introduced.",
+      "revealedAt": {
+        "chapter": 4,
+        "block": 112
+      },
+      "provenance": {
+        "chapter": 4,
+        "block": 112,
+        "blockId": "b0112"
+      }
+    },
+    {
+      "id": "rescue-the-earls-esteemed-daughter-c0004-b0115",
+      "text": "The quest requires rescuing Irene within one hour after accepting it.",
+      "revealedAt": {
+        "chapter": 4,
+        "block": 115
+      },
+      "provenance": {
+        "chapter": 4,
+        "block": 115,
+        "blockId": "b0115"
+      }
+    }
+  ]
+}

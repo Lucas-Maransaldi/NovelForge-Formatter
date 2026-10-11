@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "character:pagma",
+  "facts": [
+    {
+      "id": "pagma-c0001-b0089",
+      "text": "Pagma is a human blacksmith whose techniques surpassed those of dwarves.",
+      "revealedAt": {
+        "chapter": 1,
+        "block": 89
+      },
+      "provenance": {
+        "chapter": 1,
+        "block": 89,
+        "blockId": "b0089"
+      }
+    },
+    {
+      "id": "pagma-c0001-b0107",
+      "text": "Pagma’s Rare Book contains Pagma’s blacksmithing techniques.",
+      "revealedAt": {
+        "chapter": 1,
+        "block": 107
+      },
+      "provenance": {
+        "chapter": 1,
+        "block": 107,
+        "blockId": "b0107"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "event:rescue-the-earls-esteemed-daughter": {
+      "entityId": "event:rescue-the-earls-esteemed-daughter",
+      "resourcePath": "entities/event/rescue-the-earls-esteemed-daughter/data.json",
+      "byteLength": 843,
+      "sha256": "d318c695930ba6f7891838a74504873d7e954a7c26138f9d6286932ed635f999"
+    }
+  }
+}

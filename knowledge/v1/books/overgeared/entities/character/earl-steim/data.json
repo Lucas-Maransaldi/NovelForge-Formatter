@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "nf-rk-knowledge/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entityId": "character:earl-steim",
+  "facts": [
+    {
+      "id": "earl-steim-c0004-b0109",
+      "text": "Earl Steim is secretly protected by Doran.",
+      "revealedAt": {
+        "chapter": 4,
+        "block": 109
+      },
+      "provenance": {
+        "chapter": 4,
+        "block": 109,
+        "blockId": "b0109"
+      }
+    },
+    {
+      "id": "earl-steim-c0004-b0114",
+      "text": "Irene is Earl Steim’s only daughter.",
+      "revealedAt": {
+        "chapter": 4,
+        "block": 114
+      },
+      "provenance": {
+        "chapter": 4,
+        "block": 114,
+        "blockId": "b0114"
+      }
+    }
+  ]
+}

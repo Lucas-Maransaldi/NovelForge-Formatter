@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:ashur": {
+      "entityId": "character:ashur",
+      "resourcePath": "entities/character/ashur/data.json",
+      "byteLength": 1047,
+      "sha256": "a29c5b1fb442e71c28cb84248f41963dedba20f332a4d611b7304f6757aa151f"
+    }
+  }
+}

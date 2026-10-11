@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "nf-rk-manifest/1",
+  "bookId": "overgeared",
+  "revision": "og-r0001",
+  "entities": {
+    "character:grid": {
+      "entityId": "character:grid",
+      "resourcePath": "entities/character/grid/data.json",
+      "byteLength": 431,
+      "sha256": "eadcc1224a2462292d73baa2a210752f15532fe274d2fc1ef50eff6ced09cc5e"
+    }
+  }
+}
