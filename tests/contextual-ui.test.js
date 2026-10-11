@@ -439,3 +439,66 @@ test('bundle oficial usa somente Knowledge remoto e não cai no índice local em
     else global.window = previousWindow;
   }
 });
+
+test('clique remoto em span ou link sem destino abre LOADING e consulta IDs sem navegar', async () => {
+  const fixture = makeFixture({ chapterId: '1', novelId: 'overgeared' });
+  fixture.article.children[0].setAttribute('data-nf-block', 'b0042');
+  fixture.character.setAttribute('data-nf-entity', 'character:grid');
+  const span = fixture.document.createElement('span');
+  span.setAttribute('data-nf-entity', 'character:pagma');
+  span.textContent = 'Pagma';
+  fixture.article.children[0].appendChild(span);
+  const prior = global.NovelForgeRemoteKnowledge;
+  const calls = [];
+  global.NovelForgeRemoteKnowledge = {
+    queryEntity(context) {
+      calls.push(context);
+      return Promise.resolve({ ok: true, value: { revision: 'og-r0001', facts: [] } });
+    }
+  };
+  try {
+    global.NovelForgeContextualUI.initialize(fixture.container);
+    global.NovelForgeContextualUI.initialize(fixture.container);
+    assert.equal((fixture.article.listeners.click || []).length, 1);
+
+    const spanTap = click(fixture, span);
+    assert.equal(spanTap.defaultPrevented, true);
+    assert.match(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Consultando/);
+    await new Promise(resolve => setImmediate(resolve));
+    assert.match(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Não há informações disponíveis/);
+
+    const linkTap = click(fixture, fixture.character);
+    assert.equal(linkTap.defaultPrevented, true);
+    assert.equal(fixture.character.getAttribute('href'), '../entities/lyra.xhtml#lyra');
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(calls.map(call => [call.bookId, call.entityId, call.chapter, call.block]), [
+      ['overgeared', 'character:pagma', 1, 42],
+      ['overgeared', 'character:grid', 1, 42]
+    ]);
+  } finally {
+    const state = global.__novelforgeContextualUIState;
+    if (state && state.cleanup) state.cleanup();
+    if (prior === undefined) delete global.NovelForgeRemoteKnowledge;
+    else global.NovelForgeRemoteKnowledge = prior;
+  }
+});
+
+test('posição remota inválida apresenta indisponibilidade e não consulta o Knowledge Index', async () => {
+  const fixture = makeFixture({ chapterId: 'c1', novelId: 'overgeared' });
+  const prior = global.NovelForgeRemoteKnowledge;
+  let calls = 0;
+  global.NovelForgeRemoteKnowledge = { queryEntity() { calls++; } };
+  try {
+    global.NovelForgeContextualUI.initialize(fixture.container);
+    const tap = click(fixture, fixture.character);
+    assert.equal(tap.defaultPrevented, true);
+    assert.match(findId(fixture.document.body, 'nf-contextual-ui').textContent, /Enciclopédia indisponível/);
+    await Promise.resolve();
+    assert.equal(calls, 0);
+  } finally {
+    const state = global.__novelforgeContextualUIState;
+    if (state && state.cleanup) state.cleanup();
+    if (prior === undefined) delete global.NovelForgeRemoteKnowledge;
+    else global.NovelForgeRemoteKnowledge = prior;
+  }
+});

@@ -10,6 +10,8 @@ coverage/
 .idea/
 /.agents/
 /prompts/
+/Overgeared_Capitulos_1_a_5_NovelForge.epub
+/Overgeared_Capitulos_1_a_5_NovelForge_visual.epub
 
 # Local-only reference material; do not distribute copyrighted source text.
 /tests/fixtures/poc-v0.2.1.epub

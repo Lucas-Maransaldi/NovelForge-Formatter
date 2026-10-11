@@ -85,6 +85,20 @@ test('injeta CSS uma vez e é idempotente', () => {
   assert.equal(document.styles[0].textContent, FORMATTER_CSS);
 });
 
+test('CSS unifica cartões semânticos, estiliza raridade e trata somente marcadores explícitos', () => {
+  for (const category of ['ITEM', 'SYSTEM', 'QUEST', 'SKILL', 'STATUS', 'CLASS', 'TITLE']) {
+    assert.match(FORMATTER_CSS, new RegExp('data-nf-category="' + category + '"'));
+  }
+  assert.match(FORMATTER_CSS, /border-radius: \.55em/);
+  assert.match(FORMATTER_CSS, /> p:first-of-type \{\s*font-weight: 700/);
+  assert.match(FORMATTER_CSS, /\[data-nf-field\]\s*\{\s*font-weight: 700/);
+  assert.match(FORMATTER_CSS, /\[data-nf-field="rating"\] \+ strong\s*\{\s*color: var\(--nf-accent\)/);
+  assert.match(FORMATTER_CSS, /\.nf-delimiter\s*\{\s*display: none/);
+  assert.match(FORMATTER_CSS, /data-nf-rarity="LEGENDARY"/);
+  assert.doesNotMatch(FORMATTER_CSS, /content:\s*["'][^"']*LEGENDARY/i, 'rarity should not be duplicated as generated text');
+  assert.doesNotMatch(FORMATTER_CSS, /(^|[;}])\s*\[[^\]]*\]\s*\{\s*display:\s*none/i, 'never hide arbitrary bracket characters');
+});
+
 test('enhance injeta estilo sem alterar texto ou estrutura semântica', () => {
   const document = documentDouble();
   const text = '[The Glass Observatory]';

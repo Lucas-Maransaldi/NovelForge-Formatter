@@ -119,6 +119,11 @@ test('reexecução após troca de capítulo injeta sem duplicar estilo nem alter
 
 test('bundle não usa imports/código remoto nem reconstrução via innerHTML; Knowledge usa HTTPS permitido', () => {
   const bundle = fs.readFileSync(path.resolve(__dirname, '..', 'dist', 'novelforge-lnreader.js'), 'utf8');
+  const packageInfo = require('../package.json');
+  assert.match(bundle, new RegExp('NovelForge LNReader Formatter v' + packageInfo.version));
+  assert.match(bundle, /NovelForgeRemoteKnowledge/);
+  assert.match(bundle, /remote\.queryEntity/);
+  assert.match(bundle, /chapter\.addEventListener\('click', onClick\)/);
   assert.doesNotMatch(bundle, /\bimport\s|\bexport\s|\brequire\s*\(/);
   assert.match(bundle, /fetch\s*\(/);
   assert.match(bundle, /https:\/\/cdn\.jsdelivr\.net\/gh\/Lucas-Maransaldi\/NovelForge-Formatter/);

@@ -1,26 +1,62 @@
-/* NovelForge C1.1: presentation only; semantic EPUB markup remains authoritative. */
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] {
-  margin: 1.2em 0; padding: 1em 1.15em; border: 2px solid #a77b28;
-  border-left: 5px solid #d6ab4d; border-radius: .65em;
-  background: rgba(160, 120, 32, .10); break-inside: avoid;
+/* Visual layer for publisher-marked NovelForge windows only. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
+  --nf-accent: #727780;
+  box-sizing: border-box;
+  margin: 1em 0;
+  padding: .9em 1.05em;
+  border: 1px solid rgba(110, 116, 124, .55);
+  border-left: 4px solid var(--nf-accent);
+  border-radius: .55em;
+  background: rgba(127, 127, 127, .08);
+  break-inside: avoid;
 }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype]::before {
-  content: "QUEST"; display: block; font-weight: 700;
-  letter-spacing: .08em; color: #a67b20; margin-bottom: .65em;
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype]::before {
+  content: attr(data-nf-category);
+  display: block;
+  margin: 0 0 .55em;
+  color: var(--nf-accent);
+  font-size: .76em;
+  font-weight: 700;
+  letter-spacing: .08em;
 }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype] {
-  margin: 1em 0; padding: .85em 1em; border: 1px solid #777;
-  border-left: 4px solid #555; border-radius: .4em;
-  background: rgba(127, 127, 127, .10); break-inside: avoid;
+
+/* Categories change the accent, never the card geometry. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-subtype] { --nf-accent: #a77b28; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype] { --nf-accent: #727780; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] { --nf-accent: #a67b20; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SKILL"][data-nf-subtype] { --nf-accent: #537b67; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="STATUS"][data-nf-subtype] { --nf-accent: #52758a; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="CLASS"][data-nf-subtype] { --nf-accent: #705f91; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="TITLE"][data-nf-subtype] { --nf-accent: #9a7040; }
+
+/* In structured windows, the first paragraph is the heading row. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] > p:first-of-type {
+  font-weight: 700;
 }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype]::before {
-  content: "SYSTEM"; display: block; font-weight: 700;
-  letter-spacing: .08em; opacity: .8; margin-bottom: .5em;
+
+/* Put data-nf-field on the label node, not on its whole paragraph/value. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] [data-nf-field] {
+  font-weight: 700;
 }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"] .nf-delimiter { display: none; }
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] strong {
+  font-weight: 700;
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-subtype] [data-nf-field="rating"] + strong {
+  color: var(--nf-accent);
+}
+
+/* VIS-R13: only explicitly marked delimiter nodes are visually hidden. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] .nf-delimiter {
+  display: none;
+}
+
+/* Existing rarity marker supplies color only, avoiding duplicate rarity text/badges. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-rarity="LEGENDARY"] {
+  --nf-accent: #b08a35;
+}
+
 @media (prefers-color-scheme: dark) {
-  .nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] {
-    background: rgba(208, 160, 54, .13); border-color: #cba24d;
+  .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
+    background: rgba(180, 180, 180, .10);
   }
-  .nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype]::before { color: #e5bd67; }
 }
