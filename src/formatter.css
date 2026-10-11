@@ -1,0 +1,26 @@
+/* NovelForge C1.1: presentation only; semantic EPUB markup remains authoritative. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] {
+  margin: 1.2em 0; padding: 1em 1.15em; border: 2px solid #a77b28;
+  border-left: 5px solid #d6ab4d; border-radius: .65em;
+  background: rgba(160, 120, 32, .10); break-inside: avoid;
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype]::before {
+  content: "QUEST"; display: block; font-weight: 700;
+  letter-spacing: .08em; color: #a67b20; margin-bottom: .65em;
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype] {
+  margin: 1em 0; padding: .85em 1em; border: 1px solid #777;
+  border-left: 4px solid #555; border-radius: .4em;
+  background: rgba(127, 127, 127, .10); break-inside: avoid;
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype]::before {
+  content: "SYSTEM"; display: block; font-weight: 700;
+  letter-spacing: .08em; opacity: .8; margin-bottom: .5em;
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"] .nf-delimiter { display: none; }
+@media (prefers-color-scheme: dark) {
+  .nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] {
+    background: rgba(208, 160, 54, .13); border-color: #cba24d;
+  }
+  .nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype]::before { color: #e5bd67; }
+}

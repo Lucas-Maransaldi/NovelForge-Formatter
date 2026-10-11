@@ -1,0 +1,14 @@
+/* NovelForge PoC v0.2.1 — graceful no-script fallback */
+.nf-chapter {line-height:1.65;max-width:50rem;margin:auto;padding:1rem;color:inherit;background:transparent}
+.nf-chapter p {margin:.7em 0}
+.nf-window {margin:1.2em 0;padding:1em 1.15em;border:2px solid #a77b28;border-left:5px solid #d6ab4d;border-radius:.65em;background:rgba(160,120,32,.10);break-inside:avoid}
+.nf-window:before {content:'QUEST · HIDDEN';display:block;font-weight:bold;letter-spacing:.08em;color:#a67b20;margin-bottom:.65em}
+.nf-window p {margin:.48em 0}
+.nf-quest-title-line {font-size:1.2em;font-weight:700;color:#b9903b;margin-top:.25em!important}
+.nf-quest-rarity-line {font-weight:600;opacity:.82;font-size:.88em}
+.nf-quest [data-nf-field] {margin-top:.85em}
+.nf-quest [data-nf-field='rewards'] {font-weight:650}
+.nf-delimiter {display:none}
+.nf-entity {text-decoration:underline dotted;text-underline-offset:.17em;color:inherit}
+.nf-detail {padding:1rem;line-height:1.6}
+@media (prefers-color-scheme:dark) {.nf-window {background:rgba(208,160,54,.13);border-color:#cba24d}.nf-window:before{color:#e5bd67}.nf-quest-title-line{color:#e5bd67}}

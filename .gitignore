@@ -1,0 +1,18 @@
+node_modules/
+.DS_Store
+*.log
+Thumbs.db
+coverage/
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+/.agents/
+/prompts/
+
+# Local-only reference material; do not distribute copyrighted source text.
+/tests/fixtures/poc-v0.2.1.epub
+/tests/fixtures/original.html
+/tests/fixtures/chapter.xhtml
+/tests/fixtures/context.json
