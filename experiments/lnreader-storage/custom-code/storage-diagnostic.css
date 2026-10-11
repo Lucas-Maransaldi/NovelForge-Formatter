@@ -1,0 +1,106 @@
+/* Paste as a separate LNReader CSS Custom Code snippet. */
+.nf-poc-carrier {
+  display: none !important;
+}
+
+#nf-storage-poc-panel {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  inset: auto 8px 8px 8px !important;
+  max-height: 48vh !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+  padding: 10px !important;
+  border: 1px solid #7aa7d9 !important;
+  border-radius: 8px !important;
+  background: #101820 !important;
+  color: #f4f7fa !important;
+  font: 12px/1.35 sans-serif !important;
+  text-align: left !important;
+  opacity: 0.98 !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#nf-storage-poc-panel * {
+  box-sizing: border-box !important;
+  color: inherit !important;
+  font-family: sans-serif !important;
+}
+
+#nf-storage-poc-panel .nf-poc-title {
+  margin-bottom: 5px !important;
+  color: #9bc8ff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-identity,
+#nf-storage-poc-panel .nf-poc-location,
+#nf-storage-poc-panel .nf-poc-detail {
+  overflow-wrap: anywhere !important;
+  color: #c5d0da !important;
+  font-size: 10px !important;
+}
+
+#nf-storage-poc-panel .nf-poc-heading {
+  margin-top: 7px !important;
+  color: #9bc8ff !important;
+  font-weight: 700 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 3px 8px !important;
+  align-items: baseline !important;
+  padding: 1px 0 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-label {
+  min-width: 105px !important;
+}
+
+#nf-storage-poc-panel .nf-poc-status {
+  font-weight: 700 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-status-pass {
+  color: #89e0aa !important;
+}
+
+#nf-storage-poc-panel .nf-poc-status-fail {
+  color: #ff9696 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-status-unknown,
+#nf-storage-poc-panel .nf-poc-status-not_tested {
+  color: #f1cf82 !important;
+}
+
+#nf-storage-poc-panel .nf-poc-detail {
+  flex-basis: 100% !important;
+  padding-left: 6px !important;
+}
+
+#nf-storage-poc-panel .nf-poc-buttons {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+#nf-storage-poc-panel button {
+  min-height: 34px !important;
+  padding: 5px 9px !important;
+  border: 1px solid #7891a8 !important;
+  border-radius: 5px !important;
+  background: #263746 !important;
+  color: #fff !important;
+  font-size: 11px !important;
+}
+
+#nf-storage-poc-panel .nf-poc-copy-buffer {
+  position: fixed !important;
+  left: -10000px !important;
+  top: 0 !important;
+}
