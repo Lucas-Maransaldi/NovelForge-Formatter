@@ -241,10 +241,12 @@
       activeType = entityId.slice(0, entityId.indexOf(':')); view = 'quick'; render();
     }
 
-    chapter.addEventListener('click', onClick);
+    // Capture phase lets NovelForge handle entity taps before the reader's
+    // delegated anchor handler can consume the event.
+    chapter.addEventListener('click', onClick, true);
     const state = {
       chapter,
-      cleanup: function () { chapter.removeEventListener('click', onClick); closeDialog(false); }
+      cleanup: function () { chapter.removeEventListener('click', onClick, true); closeDialog(false); }
     };
     global[STATE_KEY] = state;
     return { ok: true, chapter, mode: remoteMode ? 'remote' : 'local-test' };

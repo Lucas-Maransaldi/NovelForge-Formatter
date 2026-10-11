@@ -465,7 +465,7 @@
   // build replaces this hook with CSS text. The visual formatter stays
   // network-independent; contextual Knowledge requests are isolated in the
   // optional production client and happen only after a semantic entity tap.
-  const FORMATTER_CSS = "/* Visual layer for publisher-marked NovelForge windows only. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {\n  --nf-accent: #727780;\n  box-sizing: border-box;\n  margin: 1em 0;\n  padding: .9em 1.05em;\n  border: 1px solid rgba(110, 116, 124, .55);\n  border-left: 4px solid var(--nf-accent);\n  border-radius: .55em;\n  background: rgba(127, 127, 127, .08);\n  break-inside: avoid;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype]::before {\n  content: attr(data-nf-category);\n  display: block;\n  margin: 0 0 .55em;\n  color: var(--nf-accent);\n  font-size: .76em;\n  font-weight: 700;\n  letter-spacing: .08em;\n}\n\n/* Categories change the accent, never the card geometry. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-subtype] { --nf-accent: #a77b28; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SYSTEM\"][data-nf-subtype] { --nf-accent: #727780; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype] { --nf-accent: #a67b20; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SKILL\"][data-nf-subtype] { --nf-accent: #537b67; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"STATUS\"][data-nf-subtype] { --nf-accent: #52758a; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"CLASS\"][data-nf-subtype] { --nf-accent: #705f91; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"TITLE\"][data-nf-subtype] { --nf-accent: #9a7040; }\n\n/* In structured windows, the first paragraph is the heading row. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] > p:first-of-type {\n  font-weight: 700;\n}\n\n/* Put data-nf-field on the label node, not on its whole paragraph/value. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] [data-nf-field] {\n  font-weight: 700;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] strong {\n  font-weight: 700;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-subtype] [data-nf-field=\"rating\"] + strong {\n  color: var(--nf-accent);\n}\n\n/* VIS-R13: only explicitly marked delimiter nodes are visually hidden. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] .nf-delimiter {\n  display: none;\n}\n\n/* Existing rarity marker supplies color only, avoiding duplicate rarity text/badges. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-rarity=\"LEGENDARY\"] {\n  --nf-accent: #b08a35;\n}\n\n@media (prefers-color-scheme: dark) {\n  .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {\n    background: rgba(180, 180, 180, .10);\n  }\n}\n";
+  const FORMATTER_CSS = "/* Visual layer for publisher-marked NovelForge windows only. */\n.nf-chapter [data-nf-entity] {\n  color: inherit;\n  cursor: pointer;\n  text-decoration: underline;\n  text-decoration-color: currentColor;\n  -webkit-tap-highlight-color: rgba(160, 120, 32, .22);\n}\n\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {\n  --nf-accent: #727780;\n  box-sizing: border-box;\n  margin: 1em 0;\n  padding: .9em 1.05em;\n  border: 1px solid rgba(110, 116, 124, .55);\n  border-left: 4px solid var(--nf-accent);\n  border-radius: .55em;\n  background: rgba(127, 127, 127, .08);\n  break-inside: avoid;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype]::before {\n  content: attr(data-nf-category);\n  display: block;\n  margin: 0 0 .55em;\n  color: var(--nf-accent);\n  font-size: .76em;\n  font-weight: 700;\n  letter-spacing: .08em;\n}\n\n/* Categories change the accent, never the card geometry. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-subtype] { --nf-accent: #a77b28; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SYSTEM\"][data-nf-subtype] { --nf-accent: #727780; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"QUEST\"][data-nf-subtype] { --nf-accent: #a67b20; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"SKILL\"][data-nf-subtype] { --nf-accent: #537b67; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"STATUS\"][data-nf-subtype] { --nf-accent: #52758a; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"CLASS\"][data-nf-subtype] { --nf-accent: #705f91; }\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"TITLE\"][data-nf-subtype] { --nf-accent: #9a7040; }\n\n/* In structured windows, the first paragraph is the heading row. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] > p:first-of-type {\n  font-weight: 700;\n}\n\n/* Put data-nf-field on the label node, not on its whole paragraph/value. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] [data-nf-field] {\n  font-weight: 700;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] strong {\n  font-weight: 700;\n}\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-subtype] [data-nf-field=\"rating\"] + strong {\n  color: var(--nf-accent);\n}\n\n/* VIS-R13: only explicitly marked delimiter nodes are visually hidden. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] .nf-delimiter {\n  display: none;\n}\n\n/* Existing rarity marker supplies color only, avoiding duplicate rarity text/badges. */\n.nf-chapter > .nf-window[data-nf-id][data-nf-category=\"ITEM\"][data-nf-rarity=\"LEGENDARY\"] {\n  --nf-accent: #b08a35;\n}\n\n@media (prefers-color-scheme: dark) {\n  .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {\n    background: rgba(180, 180, 180, .10);\n  }\n}\n";
 
   function isDescendantOfWindow(node) {
     let parent = node && node.parentElement;
@@ -767,10 +767,12 @@
       activeType = entityId.slice(0, entityId.indexOf(':')); view = 'quick'; render();
     }
 
-    chapter.addEventListener('click', onClick);
+    // Capture phase lets NovelForge handle entity taps before the reader's
+    // delegated anchor handler can consume the event.
+    chapter.addEventListener('click', onClick, true);
     const state = {
       chapter,
-      cleanup: function () { chapter.removeEventListener('click', onClick); closeDialog(false); }
+      cleanup: function () { chapter.removeEventListener('click', onClick, true); closeDialog(false); }
     };
     global[STATE_KEY] = state;
     return { ok: true, chapter, mode: remoteMode ? 'remote' : 'local-test' };
@@ -784,6 +786,7 @@
   'use strict';
 
   const CHAPTER_SELECTOR = '#LNReader-chapter';
+  const SEMANTIC_CHAPTER_SELECTOR = 'article.nf-chapter[data-nf-chapter]';
   const MAX_ATTEMPTS = 20;
   const RETRY_DELAY_MS = 100;
   const STATE_KEY = '__novelforgeLNReaderAdapterState';
@@ -805,7 +808,13 @@
 
     function initialize() {
       let root;
-      try { root = document.querySelector(CHAPTER_SELECTOR); } catch (error) { return false; }
+      try {
+        root = document.querySelector(CHAPTER_SELECTOR);
+        if (!root && typeof document.querySelectorAll === 'function') {
+          const chapters = document.querySelectorAll(SEMANTIC_CHAPTER_SELECTOR);
+          if (chapters.length === 1) root = chapters[0];
+        }
+      } catch (error) { return false; }
       if (!root) return false;
       formatter.enhance(root);
       const ui = global.NovelForgeContextualUI;
@@ -835,6 +844,6 @@
     return false;
   }
 
-  global.NovelForgeLNReaderAdapter = { start, CHAPTER_SELECTOR, MAX_ATTEMPTS, RETRY_DELAY_MS };
+  global.NovelForgeLNReaderAdapter = { start, CHAPTER_SELECTOR, SEMANTIC_CHAPTER_SELECTOR, MAX_ATTEMPTS, RETRY_DELAY_MS };
   start();
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -18,6 +18,7 @@ class Element {
     this.parentNode = null;
     this.attributes = Object.create(null);
     this.listeners = Object.create(null);
+    this.listenerOptions = Object.create(null);
     this._text = '';
     this.className = '';
     this.id = '';
@@ -28,8 +29,8 @@ class Element {
   removeChild(child) { this.children = this.children.filter(item => item !== child); child.parentElement = null; child.parentNode = null; return child; }
   setAttribute(name, value) { this.attributes[name] = String(value); if (name === 'id') this.id = String(value); }
   getAttribute(name) { return this.attributes[name] || null; }
-  addEventListener(name, listener) { (this.listeners[name] ||= []).push(listener); }
-  removeEventListener(name, listener) { this.listeners[name] = (this.listeners[name] || []).filter(item => item !== listener); }
+  addEventListener(name, listener, options) { (this.listeners[name] ||= []).push(listener); this.listenerOptions[name] = options; }
+  removeEventListener(name, listener, options) { this.listeners[name] = (this.listeners[name] || []).filter(item => item !== listener); this.listenerOptions[name] = options; }
   matches(selector) {
     if (selector === 'article.nf-chapter[data-nf-chapter]') return this.tagName === 'ARTICLE' && this.className.split(' ').includes('nf-chapter') && !!this.getAttribute('data-nf-chapter');
     if (selector === 'p[data-nf-block]') return this.tagName === 'P' && !!this.getAttribute('data-nf-block');
@@ -460,6 +461,7 @@ test('clique remoto em span ou link sem destino abre LOADING e consulta IDs sem 
     global.NovelForgeContextualUI.initialize(fixture.container);
     global.NovelForgeContextualUI.initialize(fixture.container);
     assert.equal((fixture.article.listeners.click || []).length, 1);
+    assert.equal(fixture.article.listenerOptions.click, true);
 
     const spanTap = click(fixture, span);
     assert.equal(spanTap.defaultPrevented, true);

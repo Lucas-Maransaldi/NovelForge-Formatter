@@ -3,6 +3,7 @@
   'use strict';
 
   const CHAPTER_SELECTOR = '#LNReader-chapter';
+  const SEMANTIC_CHAPTER_SELECTOR = 'article.nf-chapter[data-nf-chapter]';
   const MAX_ATTEMPTS = 20;
   const RETRY_DELAY_MS = 100;
   const STATE_KEY = '__novelforgeLNReaderAdapterState';
@@ -24,7 +25,13 @@
 
     function initialize() {
       let root;
-      try { root = document.querySelector(CHAPTER_SELECTOR); } catch (error) { return false; }
+      try {
+        root = document.querySelector(CHAPTER_SELECTOR);
+        if (!root && typeof document.querySelectorAll === 'function') {
+          const chapters = document.querySelectorAll(SEMANTIC_CHAPTER_SELECTOR);
+          if (chapters.length === 1) root = chapters[0];
+        }
+      } catch (error) { return false; }
       if (!root) return false;
       formatter.enhance(root);
       const ui = global.NovelForgeContextualUI;
@@ -54,6 +61,6 @@
     return false;
   }
 
-  global.NovelForgeLNReaderAdapter = { start, CHAPTER_SELECTOR, MAX_ATTEMPTS, RETRY_DELAY_MS };
+  global.NovelForgeLNReaderAdapter = { start, CHAPTER_SELECTOR, SEMANTIC_CHAPTER_SELECTOR, MAX_ATTEMPTS, RETRY_DELAY_MS };
   start();
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -86,6 +86,7 @@ test('injeta CSS uma vez e é idempotente', () => {
 });
 
 test('CSS unifica cartões semânticos, estiliza raridade e trata somente marcadores explícitos', () => {
+  assert.match(FORMATTER_CSS, /\.nf-chapter \[data-nf-entity\]\s*\{[^}]*color: inherit;[^}]*text-decoration: underline/s);
   for (const category of ['ITEM', 'SYSTEM', 'QUEST', 'SKILL', 'STATUS', 'CLASS', 'TITLE']) {
     assert.match(FORMATTER_CSS, new RegExp('data-nf-category="' + category + '"'));
   }

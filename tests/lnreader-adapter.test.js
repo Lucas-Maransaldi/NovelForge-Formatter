@@ -21,6 +21,7 @@ function createDocument() {
 }
 
 function createChapter(document) {
+  const listeners = Object.create(null);
   const attributes = { 'data-nf-id': 'q1', 'data-nf-category': 'QUEST', 'data-nf-subtype': 'INFO' };
   const quest = {
     parentElement: null,
@@ -45,7 +46,13 @@ function createChapter(document) {
     quest,
     nestedSystem,
     system,
-    querySelectorAll: selector => selector === '.nf-window[data-nf-id][data-nf-category][data-nf-subtype]' ? [quest, nestedSystem, system] : []
+    listeners,
+    listenerOptions: Object.create(null),
+    matches: selector => selector === 'article.nf-chapter[data-nf-chapter]',
+    contains(node) { return node === this; },
+    addEventListener(name, listener, options) { (listeners[name] ||= []).push(listener); this.listenerOptions[name] = options; },
+    removeEventListener(name, listener, options) { listeners[name] = (listeners[name] || []).filter(item => item !== listener); this.listenerOptions[name] = options; },
+    querySelectorAll: selector => selector === 'article.nf-chapter[data-nf-chapter]' ? [] : selector === '.nf-window[data-nf-id][data-nf-category][data-nf-subtype]' ? [quest, nestedSystem, system] : []
   };
 }
 
@@ -75,8 +82,9 @@ test('auto inicia pelo seletor confirmado e injeta estilos QUEST/SYSTEM', () => 
   const document = createDocument();
   const chapter = createChapter(document);
   const runtime = executeBundle(chapter);
-  assert.equal(runtime.document.styles.length, 1);
+  assert.equal(runtime.document.styles.length, 2);
   assert.equal(runtime.document.styles[0].id, 'nf-formatter-styles');
+  assert.equal(runtime.document.styles[1].id, 'nf-contextual-ui-styles');
   assert.match(runtime.document.styles[0].textContent, /data-nf-category="QUEST"/);
   assert.match(runtime.document.styles[0].textContent, /data-nf-category="SYSTEM"/);
   assert.equal(runtime.sandbox.NovelForgeFormatter.inspect(chapter).windows, 2);
@@ -102,7 +110,19 @@ test('DOMContentLoaded repete a busca quando o documento estava carregando', () 
   const callback = runtime.listeners.get('DOMContentLoaded');
   assert.equal(typeof callback, 'function');
   callback();
-  assert.equal(runtime.document.styles.length, 1);
+  assert.equal(runtime.document.styles.length, 2);
+});
+
+test('usa um único artigo nf-chapter quando o wrapper #LNReader-chapter não existe', () => {
+  const chapter = createChapter(createDocument());
+  const runtime = executeBundle(null);
+  chapter.ownerDocument = runtime.document;
+  runtime.document.querySelector = () => null;
+  runtime.document.querySelectorAll = selector => selector === 'article.nf-chapter[data-nf-chapter]' ? [chapter] : [];
+  assert.equal(runtime.sandbox.NovelForgeLNReaderAdapter.start(), true);
+  assert.equal(runtime.document.styles.length, 2);
+  assert.equal(chapter.listeners.click.length, 1);
+  assert.equal(chapter.listenerOptions.click, true);
 });
 
 test('reexecução após troca de capítulo injeta sem duplicar estilo nem alterar texto/atributos', () => {
@@ -111,7 +131,7 @@ test('reexecução após troca de capítulo injeta sem duplicar estilo nem alter
   const replacement = createChapter(runtime.document);
   runtime.document.querySelector = selector => selector === '#LNReader-chapter' ? replacement : null;
   runtime.sandbox.NovelForgeLNReaderAdapter.start();
-  assert.equal(runtime.document.styles.length, 1);
+  assert.equal(runtime.document.styles.length, 2);
   assert.equal(replacement.textContent, 'Original narrative [Hidden Quest].');
   assert.equal(replacement.attributes['data-nf-chapter'], 'c1');
   assert.equal(replacement.quest.getAttribute('data-nf-category'), 'QUEST');
@@ -123,7 +143,7 @@ test('bundle não usa imports/código remoto nem reconstrução via innerHTML; K
   assert.match(bundle, new RegExp('NovelForge LNReader Formatter v' + packageInfo.version));
   assert.match(bundle, /NovelForgeRemoteKnowledge/);
   assert.match(bundle, /remote\.queryEntity/);
-  assert.match(bundle, /chapter\.addEventListener\('click', onClick\)/);
+  assert.match(bundle, /chapter\.addEventListener\('click', onClick, true\)/);
   assert.doesNotMatch(bundle, /\bimport\s|\bexport\s|\brequire\s*\(/);
   assert.match(bundle, /fetch\s*\(/);
   assert.match(bundle, /https:\/\/cdn\.jsdelivr\.net\/gh\/Lucas-Maransaldi\/NovelForge-Formatter/);

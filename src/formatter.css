@@ -1,4 +1,12 @@
 /* Visual layer for publisher-marked NovelForge windows only. */
+.nf-chapter [data-nf-entity] {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  -webkit-tap-highlight-color: rgba(160, 120, 32, .22);
+}
+
 .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
   --nf-accent: #727780;
   box-sizing: border-box;
