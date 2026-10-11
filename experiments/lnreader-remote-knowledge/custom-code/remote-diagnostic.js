@@ -17,6 +17,10 @@
   const MAX_STRING_LENGTH = 1000;
   const FETCH_TIMEOUT_MS = 12000;
   const panelId = 'nf-remote-knowledge-poc-panel';
+  const SECTION_NAMES = [
+    'REMOTE TRANSPORT', 'MANIFEST VALIDATION', 'KNOWLEDGE VALIDATION',
+    'SHA-256', 'ANTISPOILER', 'CACHE OBSERVATIONS',
+  ];
 
   document.getElementById(panelId)?.remove();
   let panel;
@@ -26,8 +30,30 @@
   const results = [];
 
   const statusOf = value => ['PASS', 'FAIL', 'UNKNOWN', 'NOT_TESTED'].includes(value) ? value : 'UNKNOWN';
-  const push = (label, status, detail = '') => results.push({ label, status: statusOf(status), detail: String(detail || '') });
+  const sectionFor = label => {
+    const value = label.toLowerCase();
+    if (value.includes('sha-256') || value.includes('digest') || value.includes('implementation')) return 'SHA-256';
+    if (value.includes('spoiler') || value.includes('future facts')) return 'ANTISPOILER';
+    if (value.includes('manifest')) return 'MANIFEST VALIDATION';
+    if (value.includes('knowledge') || value.includes('schema / identity') || value.includes('entity')) return 'KNOWLEDGE VALIDATION';
+    if (value.includes('cache') || value.includes('offline')) return 'CACHE OBSERVATIONS';
+    return 'REMOTE TRANSPORT';
+  };
+  const push = (label, status, detail = '') => results.push({ section: sectionFor(label), label, status: statusOf(status), detail: String(detail || '') });
   const safeError = error => `${error?.name || 'Error'}: ${String(error?.message || 'sem detalhe').slice(0, 240)}`;
+
+  const overallStatus = () => {
+    const runResults = results.filter(item => /^Run \d+ overall$/.test(item.label));
+    if (!runResults.length) return 'NOT_TESTED';
+    if (runResults.some(item => item.status === 'FAIL')) return 'FAIL';
+    if (runResults.length < 2 || runResults.some(item => item.status !== 'PASS')) return 'NOT_TESTED';
+    const required = ['MANIFEST VALIDATION', 'KNOWLEDGE VALIDATION', 'SHA-256', 'ANTISPOILER'];
+    for (const section of required) {
+      const relevant = results.filter(item => item.section === section);
+      if (!relevant.length || relevant.some(item => item.status !== 'PASS')) return 'NOT_TESTED';
+    }
+    return 'PASS';
+  };
 
   const addText = (parent, tag, className, text) => {
     const element = document.createElement(tag);
@@ -39,17 +65,22 @@
 
   const render = () => {
     if (!panel?.isConnected) return;
-    const list = panel.querySelector('[data-remote-results]');
-    list.replaceChildren();
-    if (!results.length) addText(list, 'div', 'nf-rk-row', 'NOT_TESTED — aguardando execução');
-    for (const item of results) {
-      const row = document.createElement('div');
-      row.className = 'nf-rk-row';
-      addText(row, 'span', 'nf-rk-label', item.label);
-      addText(row, 'span', `nf-rk-status nf-rk-${item.status.toLowerCase()}`, item.status);
-      if (item.detail) addText(row, 'span', 'nf-rk-detail', item.detail);
-      list.append(row);
+    for (const list of panel.querySelectorAll('[data-remote-section]')) {
+      const section = list.getAttribute('data-remote-section');
+      list.replaceChildren();
+      const items = results.filter(item => item.section === section);
+      if (!items.length) addText(list, 'div', 'nf-rk-row', 'NOT_TESTED — nenhum resultado produzido nesta seção.');
+      for (const item of items) {
+        const row = document.createElement('div');
+        row.className = 'nf-rk-row';
+        addText(row, 'span', 'nf-rk-label', item.label);
+        addText(row, 'span', `nf-rk-status nf-rk-${item.status.toLowerCase()}`, item.status);
+        if (item.detail) addText(row, 'span', 'nf-rk-detail', item.detail);
+        list.append(row);
+      }
     }
+    const overall = panel.querySelector('[data-remote-overall]');
+    if (overall) { overall.textContent = `Overall: ${running ? 'IN_PROGRESS' : overallStatus()}`; overall.setAttribute('data-status', running ? 'in-progress' : overallStatus().toLowerCase()); }
   };
 
   const setState = (state, detail = '') => {
@@ -64,13 +95,19 @@
     'NOVELFORGE REMOTE KNOWLEDGE DIAGNOSTIC',
     `Version: ${VERSION}`,
     `Execution: ${running ? 'IN_PROGRESS' : 'COMPLETE'}`,
+    `Overall: ${running ? 'IN_PROGRESS' : overallStatus()}`,
     `location.href: ${String(location.href).slice(0, 180)}`,
     `location.origin: ${location.origin || 'null'}`,
     `document.baseURI: ${String(document.baseURI).slice(0, 180)}`,
     `Manifest URL: ${REMOTE_MANIFEST_URL}`,
     `Knowledge URL: ${REMOTE_KNOWLEDGE_URL}`,
     '',
-    ...results.map(item => `- ${item.label}: ${item.status}${item.detail ? ` — ${item.detail}` : ''}`),
+    ...SECTION_NAMES.flatMap(section => [
+      '', section,
+      ...(results.filter(item => item.section === section).length
+        ? results.filter(item => item.section === section).map(item => `- ${item.label}: ${item.status}${item.detail ? ` — ${item.detail}` : ''}`)
+        : ['- Section result: NOT_TESTED — nenhum resultado produzido nesta seção.']),
+    ]),
     '',
     'SHA-256 validates byte integrity against this manifest, not publisher authenticity.',
     'Timing alone does not establish HTTP cache reuse; no persistent cache is implemented.',
@@ -92,10 +129,15 @@
     state.setAttribute('data-remote-state', '');
     state.setAttribute('role', 'status');
     state.setAttribute('aria-live', 'polite');
-    const output = document.createElement('div');
-    output.className = 'nf-rk-results';
-    output.setAttribute('data-remote-results', '');
-    panel.append(output);
+    const overall = addText(panel, 'div', 'nf-rk-overall', 'Overall: NOT_TESTED');
+    overall.setAttribute('data-remote-overall', '');
+    for (const sectionName of SECTION_NAMES) {
+      addText(panel, 'div', 'nf-rk-heading', sectionName);
+      const output = document.createElement('div');
+      output.className = 'nf-rk-results';
+      output.setAttribute('data-remote-section', sectionName);
+      panel.append(output);
+    }
     const buttons = document.createElement('div');
     buttons.className = 'nf-rk-buttons';
     const run = document.createElement('button');
@@ -192,7 +234,6 @@
     const operation = (async () => {
       const start = performance.now();
       const response = await fetch(url.href, { method: 'GET', mode: 'cors', credentials: 'omit', redirect: 'error', signal: controller?.signal });
-      const elapsedMs = Math.round(performance.now() - start);
       if (response.type === 'opaque') throw new Error('Resposta opaque: JSON não pode ser lido; no-cors não é usado.');
       if (response.redirected) throw new Error('Redirecionamento detectado e rejeitado.');
       if (response.url) {
@@ -203,9 +244,13 @@
       for (const name of ['content-type', 'access-control-allow-origin', 'cache-control', 'etag', 'age']) {
         try { headers[name] = response.headers?.get(name) || 'NOT_EXPOSED'; } catch { headers[name] = 'UNKNOWN'; }
       }
-      push(`${label} response`, response.ok ? 'PASS' : 'FAIL', `type=${response.type || 'UNKNOWN'}; status=${response.status}; ok=${Boolean(response.ok)}; redirected=${Boolean(response.redirected)}; ${elapsedMs} ms; headers=${JSON.stringify(headers)}`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}.`);
+      if (!response.ok) {
+        push(`${label} response`, 'FAIL', `type=${response.type || 'UNKNOWN'}; status=${response.status}; ok=false; redirected=${Boolean(response.redirected)}; ${Math.round(performance.now() - start)} ms; headers=${JSON.stringify(headers)}`);
+        throw new Error(`HTTP ${response.status}.`);
+      }
       const bytes = await readLimitedBytes(response, limit, controller);
+      const elapsedMs = Math.round(performance.now() - start);
+      push(`${label} response`, 'PASS', `type=${response.type || 'UNKNOWN'}; status=${response.status}; ok=true; redirected=${Boolean(response.redirected)}; bytes=${bytes.byteLength}; ${elapsedMs} ms; headers=${JSON.stringify(headers)}`);
       return { bytes, elapsedMs, status: response.status, byteLength: bytes.byteLength };
     })();
     try { return await Promise.race([operation, timeout]); }
@@ -250,10 +295,77 @@
     return facts.filter(fact => fact.revealedAt.chapter < position.chapter || (fact.revealedAt.chapter === position.chapter && fact.revealedAt.block <= position.block));
   };
 
+  const getWebCryptoSubtle = () => {
+    try { return typeof crypto !== 'undefined' && crypto.subtle && typeof crypto.subtle.digest === 'function' ? crypto.subtle : null; }
+    catch { return null; }
+  };
+
   const sha256Hex = async bytes => {
-    if (typeof crypto === 'undefined' || !crypto.subtle || typeof crypto.subtle.digest !== 'function') throw new Error('Web Crypto SHA-256 indisponível; integridade NOT_TESTED.');
-    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
-    return [...digest].map(byte => byte.toString(16).padStart(2, '0')).join('');
+    const started = performance.now();
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('SHA-256 requer Uint8Array com os bytes originais.');
+    if (bytes.byteLength > MAX_KNOWLEDGE_BYTES) throw new RangeError(`SHA-256 input exceeds ${MAX_KNOWLEDGE_BYTES} bytes.`);
+    const subtle = getWebCryptoSubtle();
+    if (subtle) {
+      try {
+        const digest = new Uint8Array(await subtle.digest('SHA-256', bytes));
+        return { hex: [...digest].map(byte => byte.toString(16).padStart(2, '0')).join(''), implementation: 'WEB_CRYPTO', elapsedMs: Math.round(performance.now() - started) };
+      } catch (error) {
+        try { return { hex: sha256Fallback(bytes), implementation: 'JS_FALLBACK', elapsedMs: Math.round(performance.now() - started), webCryptoError: safeError(error) }; }
+        catch (fallbackError) { throw new Error(`Web Crypto failed (${safeError(error)}); JS fallback failed (${safeError(fallbackError)}).`); }
+      }
+    }
+    try { return { hex: sha256Fallback(bytes), implementation: 'JS_FALLBACK', elapsedMs: Math.round(performance.now() - started) }; }
+    catch (error) { throw new Error(`Web Crypto unavailable; JS fallback failed (${safeError(error)}).`); }
+  };
+
+  // FIPS 180-4 SHA-256 over the exact response octets; no text decode/re-encode occurs.
+  const sha256Fallback = input => {
+    if (!(input instanceof Uint8Array)) throw new TypeError('Expected Uint8Array bytes.');
+    if (input.byteLength > MAX_KNOWLEDGE_BYTES) throw new RangeError(`Input exceeds the ${MAX_KNOWLEDGE_BYTES}-byte POC limit.`);
+    const K = [
+      0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2,
+    ];
+    const bitLength = input.byteLength * 8;
+    const paddedLength = Math.ceil((input.byteLength + 9) / 64) * 64;
+    const padded = new Uint8Array(paddedLength);
+    padded.set(input);
+    padded[input.byteLength] = 0x80;
+    const view = new DataView(padded.buffer);
+    view.setUint32(paddedLength - 8, Math.floor(bitLength / 0x100000000), false);
+    view.setUint32(paddedLength - 4, bitLength >>> 0, false);
+    const H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    const W = new Uint32Array(64);
+    const rotr = (word, count) => (word >>> count) | (word << (32 - count));
+    for (let offset = 0; offset < paddedLength; offset += 64) {
+      for (let i = 0; i < 16; i++) W[i] = view.getUint32(offset + i * 4, false);
+      for (let i = 16; i < 64; i++) {
+        const x = W[i - 15], y = W[i - 2];
+        const s0 = rotr(x, 7) ^ rotr(x, 18) ^ (x >>> 3);
+        const s1 = rotr(y, 17) ^ rotr(y, 19) ^ (y >>> 10);
+        W[i] = (W[i - 16] + s0 + W[i - 7] + s1) >>> 0;
+      }
+      let [a,b,c,d,e,f,g,h] = H;
+      for (let i = 0; i < 64; i++) {
+        const sum1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+        const choice = (e & f) ^ (~e & g);
+        const t1 = (h + sum1 + choice + K[i] + W[i]) >>> 0;
+        const sum0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+        const majority = (a & b) ^ (a & c) ^ (b & c);
+        const t2 = (sum0 + majority) >>> 0;
+        h = g; g = f; f = e; e = (d + t1) >>> 0;
+        d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+      }
+      H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;
+      H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;
+    }
+    return H.map(word => word.toString(16).padStart(8, '0')).join('');
   };
 
   const runQuery = async (runId, endpoints) => {
@@ -266,14 +378,17 @@
     const response = await timedFetch(endpoints.knowledge, MAX_KNOWLEDGE_BYTES, `Run ${runId} knowledge`);
     push(`Run ${runId} knowledge bytes`, response.byteLength === manifest.byteLength ? 'PASS' : 'FAIL', `received=${response.byteLength}; expected=${manifest.byteLength}; ${response.elapsedMs} ms`);
     if (response.byteLength !== manifest.byteLength) throw new Error('byteLength não corresponde ao manifesto.');
-    let hash;
-    try { hash = await sha256Hex(response.bytes); }
+    let digest;
+    try { digest = await sha256Hex(response.bytes); }
     catch (error) {
-      if (String(error?.message || '').includes('indisponível')) push(`Run ${runId} SHA-256`, 'NOT_TESTED', safeError(error));
+      push(`Run ${runId} SHA-256 implementation`, 'FAIL', `WEB_CRYPTO/JS_FALLBACK não produziu digest: ${safeError(error)}`);
+      push(`Run ${runId} SHA-256 Digest`, 'FAIL', safeError(error));
       throw error;
     }
-    push(`Run ${runId} SHA-256`, hash === manifest.sha256 ? 'PASS' : 'FAIL', hash === manifest.sha256 ? 'Bytes correspondem ao hash do manifesto.' : 'Hash divergente; JSON não será usado.');
-    if (hash !== manifest.sha256) throw new Error('SHA-256 divergente.');
+    push(`Run ${runId} SHA-256 implementation`, 'PASS', `${digest.implementation}${digest.webCryptoError ? `; Web Crypto fallback: ${digest.webCryptoError}` : ''}`);
+    push(`Run ${runId} SHA-256 Digest`, digest.hex === manifest.sha256 ? 'PASS' : 'FAIL', `${digest.hex}; ${digest.elapsedMs} ms`);
+    if (digest.hex !== manifest.sha256) throw new Error('SHA-256 divergente; conhecimento bloqueado.');
+    push(`Run ${runId} SHA-256 Integrity`, 'PASS', 'Hash dos bytes recebidos corresponde ao manifesto.');
 
     const data = parseJsonBytes(response.bytes);
     validateKnowledge(data);
@@ -286,9 +401,11 @@
     for (const query of queries) {
       const ids = filterFacts(data.facts, query.position).map(fact => fact.id);
       const allowed = ids.join(',') === query.expected.join(',');
-      push(`Run ${runId} spoiler filter ${query.name}`, allowed ? 'PASS' : 'FAIL', `allowed IDs=${ids.join(',') || '(none)'}`);
+      const denied = data.facts.map(fact => fact.id).filter(id => !ids.includes(id));
+      push(`Run ${runId} spoiler filter ${query.name}`, allowed ? 'PASS' : 'FAIL', `ALLOW: ${ids.join(', ') || '(none)'}; DENY: ${denied.join(', ') || '(none)'}`);
       if (!allowed) throw new Error(`Filtro antisspoiler divergente em ${query.name}.`);
     }
+    push(`Run ${runId} Future facts leaked`, 'PASS', 'NO — fatos futuros estão somente em DENY.');
     return true;
   };
 
@@ -303,7 +420,7 @@
       push('fetch', typeof fetch === 'function' ? 'PASS' : 'FAIL', typeof fetch);
       push('AbortController', typeof AbortController === 'function' ? 'PASS' : 'NOT_TESTED', typeof AbortController);
       push('Response', typeof Response === 'function' ? 'PASS' : 'NOT_TESTED', typeof Response);
-      push('Web Crypto', typeof crypto !== 'undefined' && crypto.subtle ? 'PASS' : 'NOT_TESTED', typeof crypto !== 'undefined' && crypto.subtle ? 'crypto.subtle presente' : 'SHA-256 pode ficar NOT_TESTED');
+      push('Web Crypto', getWebCryptoSubtle() ? 'PASS' : 'NOT_TESTED', getWebCryptoSubtle() ? 'crypto.subtle presente; digest será tentado' : 'Indisponível; fallback JS será usado');
       const endpoints = validateHttpsEndpoints();
       for (let attempt = 1; attempt <= 2; attempt++) {
         const started = performance.now();
@@ -313,6 +430,20 @@
         } catch (error) {
           const message = safeError(error);
           const status = message.includes('Timeout') ? 'FAIL' : message.includes('indisponível') ? 'NOT_TESTED' : 'FAIL';
+          const hasManifest = results.some(item => item.label === `Run ${attempt} manifest validation`);
+          const hasManifestBytes = results.some(item => item.label === `Run ${attempt} manifest bytes`);
+          const hasKnowledgeBytes = results.some(item => item.label === `Run ${attempt} knowledge bytes`);
+          const hasDigestResult = results.some(item => item.label === `Run ${attempt} SHA-256 Digest` && item.status !== 'PASS');
+          const failureLabel = hasKnowledgeBytes && (message.includes('SHA-256') || hasDigestResult)
+            ? `Run ${attempt} SHA-256 rejection`
+            : message.includes('antisspoiler')
+              ? `Run ${attempt} antisspoiler rejection`
+              : hasManifest
+                ? `Run ${attempt} knowledge validation rejection`
+                : hasManifestBytes
+                  ? `Run ${attempt} manifest validation rejection`
+                  : `Run ${attempt} transport rejection`;
+          push(failureLabel, status, message);
           push(`Run ${attempt} overall`, status, message);
         }
         render();

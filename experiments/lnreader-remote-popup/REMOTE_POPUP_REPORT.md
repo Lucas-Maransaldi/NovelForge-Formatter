@@ -1,0 +1,26 @@
+# C5.5 — relatório da POC
+
+## Achado arquitetural
+
+`src/contextual-ui.js` instala delegação de clique no capítulo, preserva o link até que a consulta local C2 tenha sucesso, cria a interface com `createElement`/`textContent`, restaura foco e expõe os estados via DOM. Ele depende de `NovelForgeFormatter.loadContextIndex/queryEntity`; portanto não foi importado nem alterado. `src/context-index.js` exige índice embarcado, capítulo e ordem de blocos estável, compara blocos por ordem validada e exige proveniência. O formato remoto C5.4, em contraste, traz `revealedAt` numérico global `chapter/block`, sem transportar/validar ordem editorial de blocos EPUB. A C5.5 reproduz explicitamente a regra numérica requerida pela fixture, sem alegar que isso substitui a ordem C2.1 em produção.
+
+Os marcadores de entidade/bloco estão na fixture sintética `tests/fixtures/chapter-synthetic.xhtml`; a identidade do livro e a posição segura não são uma API do LNReader. A POC exige atributos explícitos no EPUB: `article.nf-chapter[data-nf-novel="nf-overgeared-poc"][data-nf-chapter="889"]` e `p[data-nf-block="b0042"]` (ou os valores `900`/`b0004` e `b0005`). Não tenta adivinhar capítulo por título, ordem visual, href nem estado interno do app. O fixture C2 fornecido usa chapter ID `c1` e `b1...b5`, logo não basta para as consultas remotas `889/42`, `900/4`, `900/5`; nenhum EPUB foi alterado/criado nesta entrega.
+
+## Comportamento
+
+O snippet intercepta em fase capture somente `data-nf-entity="character:braham"` e chama `preventDefault()` antes de abrir a consulta. Links comuns e entidades não suportadas permanecem intocados. Clique válido abre LOADING imediatamente. Livro/capítulo/bloco inválido falha fechado. Requests são HTTPS, CORS, sem credenciais, redirects proibidos, limitados por byte e timeout. O manifesto deve apontar exatamente para a URL de conhecimento configurada e concordar em schema/bookId. Bytes são conferidos por comprimento e SHA-256 antes do decode; JSON e toda proveniência temporal são validados antes de qualquer cache/exibição. A comparação é numérica inclusiva em chapter e block. O cache em memória guarda somente objeto validado e sua chave inclui bookId, revision e as duas URLs; a filtragem é recalculada a cada clique.
+
+Popup produz IDLE/LOADING/READY/EMPTY/ERROR, limpa fatos anteriores e usa `textContent`; fecha/cancela e geração de consulta impede resultado obsoleto. Diagnóstico omite texto dos fatos. SHA-256 copiado da implementação auditada C5.4.1, mantendo o fallback JS autocontido necessário ao Custom Code sem imports; Node crypto verifica vetores independentes. SHA-256 confere integridade contra manifesto, não autenticidade do publicador. O `@main` configurado é mutável e permanece risco de reprodutibilidade.
+
+## Testes e limites
+
+`scripts/test-remote-popup.mjs` valida sintaxe/guardas do snippet real, executa a função SHA-256 real do arquivo contra Node crypto e testa os limites da fixture. Isso não substitui DOM/WebView real. Cobertura de fetch, cliques, corrida, estados, schema/hash alterados e abortamento ainda precisa de harness de DOM mais completo; não reportamos esses casos como aprovados. `npm test` cobre regressões da produção e pode revelar a divergência preexistente do manifesto global; C5.5 não altera o manifesto. Android: **NOT_TESTED**; checklist em `results/ANDROID_TEST_RESULTS.md`.
+
+## Limitações/decisões
+
+- POC suporta exclusivamente `character:braham` e o bookId configurado.
+- O vínculo de identidade precisa ser gravado explicitamente nos metadados do EPUB de teste. A configuração manual não é verificação automática de livro.
+- Blocos `bNNN` são interpretados numericamente apenas neste formato demonstrativo. IDs alfanuméricos/ordem C2.1 exigem transporte explícito de ordenação e outra decisão; falham fechados aqui.
+- O fixture C5.4 é sintético, mas não representa atributos chapter/block contextual do EPUB esperado. Para Android, preparar EPUB exclusivamente sintético com marcadores exatos descritos acima.
+- CSS é separado e deve ser aplicado no campo de estilo suportado pelo ambiente real. A existência desse mecanismo no LNReader não é presumida.
+- Nunca habilitar simultaneamente com o popup de produção. A coexistência não foi validada.

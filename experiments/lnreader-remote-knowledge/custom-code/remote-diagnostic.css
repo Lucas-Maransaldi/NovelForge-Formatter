@@ -18,6 +18,10 @@
 
 #nf-remote-knowledge-poc-panel * { box-sizing: border-box !important; color: inherit !important; font-family: sans-serif !important; }
 #nf-remote-knowledge-poc-panel .nf-rk-title { margin-bottom: 5px !important; color: #9bc8ff !important; font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-heading { margin-top: 7px !important; color: #9bc8ff !important; font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-overall { margin: 5px 0 !important; padding: 5px !important; border-radius: 4px !important; background: #263746 !important; font-weight: 700 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-overall[data-status="pass"] { background: #123d28 !important; color: #a8f0c0 !important; }
+#nf-remote-knowledge-poc-panel .nf-rk-overall[data-status="fail"] { background: #501f24 !important; color: #ff9696 !important; }
 #nf-remote-knowledge-poc-panel .nf-rk-meta,
 #nf-remote-knowledge-poc-panel .nf-rk-detail { overflow-wrap: anywhere !important; color: #c5d0da !important; font-size: 10px !important; }
 #nf-remote-knowledge-poc-panel .nf-rk-state { margin: 5px 0 !important; padding: 5px !important; background: #55420f !important; color: #ffe29a !important; font-weight: 700 !important; }

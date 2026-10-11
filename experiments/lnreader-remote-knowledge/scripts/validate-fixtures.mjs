@@ -79,9 +79,14 @@ assert(js.includes('response.type === \'opaque\''), 'opaque responses are reject
 assert(js.includes('getReader()') && js.includes('total > limit'), 'streamed body enforces actual byte limit');
 assert(js.includes('AbortController') && js.includes('Promise.race'), 'fetch has finite timeout/abort path');
 assert(js.includes('Access-Control-Allow-Origin'.toLowerCase()), 'CORS header is inspected only when exposed');
-assert(js.includes('crypto.subtle.digest') && js.includes('NOT_TESTED'), 'hash requires actual Web Crypto; no simulated hash');
+assert(js.includes("subtle.digest('SHA-256', bytes)") && js.includes('NOT_TESTED'), 'Web Crypto is attempted when exposed; no simulated hash');
+assert(js.includes('const sha256Fallback = input =>') && js.includes('JS_FALLBACK') && js.includes('WEB_CRYPTO'), 'real byte-level SHA-256 fallback and implementation reporting exist');
 assert(js.includes('fact.revealedAt.chapter') && js.includes('fact.revealedAt.block'), 'spoiler filter compares chapter and block');
-assert(js.includes('allowed IDs=') && !js.includes('fact.text}'), 'public result reports allowed IDs, not remote fact text');
+assert(js.includes('ALLOW:') && js.includes('DENY:') && !js.includes('fact.text}'), 'public result reports allowed/denied IDs, not remote fact text');
+for (const heading of ['REMOTE TRANSPORT', 'MANIFEST VALIDATION', 'KNOWLEDGE VALIDATION', 'SHA-256', 'ANTISPOILER', 'CACHE OBSERVATIONS']) {
+  assert(js.includes(`'${heading}'`), `diagnostic report contains ${heading} section`);
+}
+assert(js.includes('Overall: ${running ? \'IN_PROGRESS\' : overallStatus()}'), 'overall status is not prematurely PASS');
 assert.equal((css.match(/{/g) || []).length, (css.match(/}/g) || []).length, 'CSS braces balance');
 assert(css.includes('#nf-remote-knowledge-poc-panel'), 'diagnostic CSS has panel styles');
 
