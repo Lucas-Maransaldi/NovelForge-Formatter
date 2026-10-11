@@ -100,6 +100,26 @@ test('CSS unifica cartões semânticos, estiliza raridade e trata somente marcad
   assert.doesNotMatch(FORMATTER_CSS, /(^|[;}])\s*\[[^\]]*\]\s*\{\s*display:\s*none/i, 'never hide arbitrary bracket characters');
 });
 
+test('paleta visual destaca SYSTEM em azul e colore painéis e popup sem tocar no texto', () => {
+  assert.match(FORMATTER_CSS, /data-nf-category="SYSTEM"[^}]*--nf-panel-bg:\s*#102139;[^}]*--nf-panel-edge:\s*#48b9ff;[^}]*--nf-panel-fg:\s*#e9f5ff/s);
+  for (const category of ['ITEM', 'QUEST', 'SKILL', 'STATUS', 'CLASS', 'TITLE']) {
+    const rule = new RegExp('data-nf-category="' + category + '"[^}]*--nf-panel-bg:\\s*rgba\\(');
+    assert.match(FORMATTER_CSS, rule, `${category} recebe fundo tonal próprio`);
+  }
+  assert.match(FORMATTER_CSS, /data-nf-rarity="LEGENDARY"[^}]*--nf-panel-bg:\s*rgba\(176, 138, 53/s);
+
+  const popupCss = fs.readFileSync(path.resolve(__dirname, '..', 'src', 'contextual-ui.css'), 'utf8');
+  assert.match(popupCss, /\.nf-context-panel\s*\{[^}]*background:\s*#edf6ff/s);
+  assert.match(popupCss, /@media\s*\(prefers-color-scheme:\s*dark\)[^]*\.nf-context-panel\s*\{[^}]*background:\s*#102139/s);
+  assert.match(popupCss, /\.nf-context-primary\s*\{[^}]*background:\s*#176da3/s);
+
+  assert.match(distApi.FORMATTER_CSS, /--nf-panel-bg:\s*#102139/);
+  const bundle = fs.readFileSync(path.resolve(__dirname, '..', 'dist', 'novelforge-lnreader.js'), 'utf8');
+  const uiCssLiteral = bundle.match(/const UI_CSS = ("(?:\\.|[^"\\])*");/);
+  assert.ok(uiCssLiteral, 'bundle LNReader contém o CSS do popup');
+  assert.match(JSON.parse(uiCssLiteral[1]), /background:\s*#edf6ff/);
+});
+
 test('enhance injeta estilo sem alterar texto ou estrutura semântica', () => {
   const document = documentDouble();
   const text = '[The Glass Observatory]';

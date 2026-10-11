@@ -14,7 +14,8 @@ const privateFixturePaths = new Set([
   'tests/fixtures/context.json',
   'Overgeared_Capitulos_1_a_5_NovelForge.epub',
   'Overgeared_Capitulos_1_a_5_NovelForge_visual.epub',
-  'Overgeared_1-5_NovelForge_Reenriquecido.epub'
+  'Overgeared_1-5_NovelForge_Reenriquecido.epub',
+  'Overgeared_1-5_NovelForge_Sem_CSS_Proprio.epub'
 ]);
 
 function listFiles(directory, relative = '') {

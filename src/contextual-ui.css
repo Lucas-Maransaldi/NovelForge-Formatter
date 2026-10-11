@@ -1,16 +1,16 @@
 .nf-context-overlay {
   position: fixed; z-index: 2147483000; inset: 0; display: flex;
   align-items: flex-end; justify-content: center; padding: 1rem;
-  background: rgba(0, 0, 0, .48); color: #222;
+  background: rgba(8, 22, 39, .58); color: #173047;
 }
 .nf-context-panel {
   box-sizing: border-box; width: min(100%, 42rem); max-height: 82vh;
-  overflow: auto; padding: 1rem; border: 1px solid #a77b28;
-  border-radius: .8rem; background: #fff; box-shadow: 0 .5rem 2rem rgba(0,0,0,.3);
+  overflow: auto; padding: 1rem; border: 1px solid #48b9ff;
+  border-radius: .8rem; background: #edf6ff; box-shadow: 0 .6rem 2rem rgba(8,22,39,.34);
   font: inherit; line-height: 1.5;
 }
-.nf-context-header h2 { margin: 0; font-size: 1.25rem; }
-.nf-context-type { margin: .2rem 0 .8rem; opacity: .72; }
+.nf-context-header h2 { margin: 0; color: #176493; font-size: 1.25rem; }
+.nf-context-type { margin: .2rem 0 .8rem; color: #46627d; }
 .nf-context-content { overflow-wrap: anywhere; }
 .nf-context-facts { margin: 0; padding-left: 1.3rem; }
 .nf-context-fact { margin: .65rem 0; }
@@ -18,12 +18,15 @@
 .nf-context-source { opacity: .72; }
 .nf-context-empty { margin: .5rem 0; }
 .nf-context-actions { display: flex; gap: .65rem; justify-content: flex-end; margin-top: 1rem; }
-.nf-context-button { min-height: 44px; min-width: 44px; padding: .55rem .9rem; border: 1px solid #777; border-radius: .45rem; background: transparent; color: inherit; font: inherit; }
-.nf-context-primary { border-color: #a77b28; background: #a77b28; color: #fff; }
+.nf-context-button { min-height: 44px; min-width: 44px; padding: .55rem .9rem; border: 1px solid #7893ad; border-radius: .45rem; background: transparent; color: inherit; font: inherit; }
+.nf-context-primary { border-color: #176da3; background: #176da3; color: #fff; }
 @media (prefers-color-scheme: dark) {
-  .nf-context-overlay { color: #eee; }
-  .nf-context-panel { border-color: #cba24d; background: #222; }
-  .nf-context-primary { border-color: #cba24d; background: #9b7423; color: #fff; }
+  .nf-context-overlay { color: #e9f5ff; }
+  .nf-context-panel { border-color: #48b9ff; background: #102139; }
+  .nf-context-header h2 { color: #78d5ff; }
+  .nf-context-type { color: #b9d8ef; }
+  .nf-context-button { border-color: #7da8c8; }
+  .nf-context-primary { border-color: #2586bb; background: #176da3; color: #fff; }
 }
 @media (min-width: 40rem) {
   .nf-context-overlay { align-items: center; }

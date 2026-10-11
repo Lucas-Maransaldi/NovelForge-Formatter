@@ -9,33 +9,78 @@
 
 .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
   --nf-accent: #727780;
+  --nf-panel-bg: rgba(127, 127, 127, .08);
+  --nf-panel-edge: rgba(110, 116, 124, .48);
+  --nf-label-bg: rgba(127, 127, 127, .14);
   box-sizing: border-box;
   margin: 1em 0;
   padding: .9em 1.05em;
-  border: 1px solid rgba(110, 116, 124, .55);
+  border: 1px solid var(--nf-panel-edge);
   border-left: 4px solid var(--nf-accent);
   border-radius: .55em;
-  background: rgba(127, 127, 127, .08);
+  background: var(--nf-panel-bg);
+  box-shadow: 0 2px 10px rgba(20, 32, 48, .08);
+  color: var(--nf-panel-fg, inherit);
   break-inside: avoid;
 }
 .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype]::before {
   content: attr(data-nf-category);
-  display: block;
+  display: inline-block;
   margin: 0 0 .55em;
+  padding: .2em .5em;
+  border-radius: .25em;
+  background: var(--nf-label-bg);
   color: var(--nf-accent);
   font-size: .76em;
   font-weight: 700;
   letter-spacing: .08em;
 }
 
-/* Categories change the accent, never the card geometry. */
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-subtype] { --nf-accent: #a77b28; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype] { --nf-accent: #727780; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] { --nf-accent: #a67b20; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="SKILL"][data-nf-subtype] { --nf-accent: #537b67; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="STATUS"][data-nf-subtype] { --nf-accent: #52758a; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="CLASS"][data-nf-subtype] { --nf-accent: #705f91; }
-.nf-chapter > .nf-window[data-nf-id][data-nf-category="TITLE"][data-nf-subtype] { --nf-accent: #9a7040; }
+/* Each semantic category gets a restrained tint, preserving shared geometry. */
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-subtype] {
+  --nf-accent: #a77b28;
+  --nf-panel-bg: rgba(167, 123, 40, .12);
+  --nf-panel-edge: rgba(167, 123, 40, .46);
+  --nf-label-bg: rgba(167, 123, 40, .16);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SYSTEM"][data-nf-subtype] {
+  --nf-accent: #78d5ff;
+  --nf-panel-bg: #102139;
+  --nf-panel-edge: #48b9ff;
+  --nf-label-bg: rgba(72, 185, 255, .16);
+  --nf-panel-fg: #e9f5ff;
+  box-shadow: 0 3px 14px rgba(16, 33, 57, .22);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="QUEST"][data-nf-subtype] {
+  --nf-accent: #a67b20;
+  --nf-panel-bg: rgba(222, 169, 60, .13);
+  --nf-panel-edge: rgba(166, 123, 32, .46);
+  --nf-label-bg: rgba(222, 169, 60, .17);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="SKILL"][data-nf-subtype] {
+  --nf-accent: #537b67;
+  --nf-panel-bg: rgba(72, 143, 103, .13);
+  --nf-panel-edge: rgba(72, 143, 103, .46);
+  --nf-label-bg: rgba(72, 143, 103, .17);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="STATUS"][data-nf-subtype] {
+  --nf-accent: #52758a;
+  --nf-panel-bg: rgba(67, 144, 180, .13);
+  --nf-panel-edge: rgba(67, 144, 180, .46);
+  --nf-label-bg: rgba(67, 144, 180, .17);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="CLASS"][data-nf-subtype] {
+  --nf-accent: #705f91;
+  --nf-panel-bg: rgba(123, 96, 180, .12);
+  --nf-panel-edge: rgba(123, 96, 180, .44);
+  --nf-label-bg: rgba(123, 96, 180, .16);
+}
+.nf-chapter > .nf-window[data-nf-id][data-nf-category="TITLE"][data-nf-subtype] {
+  --nf-accent: #9a7040;
+  --nf-panel-bg: rgba(184, 129, 62, .13);
+  --nf-panel-edge: rgba(184, 129, 62, .46);
+  --nf-label-bg: rgba(184, 129, 62, .17);
+}
 
 /* In structured windows, the first paragraph is the heading row. */
 .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] > p:first-of-type {
@@ -61,10 +106,7 @@
 /* Existing rarity marker supplies color only, avoiding duplicate rarity text/badges. */
 .nf-chapter > .nf-window[data-nf-id][data-nf-category="ITEM"][data-nf-rarity="LEGENDARY"] {
   --nf-accent: #b08a35;
-}
-
-@media (prefers-color-scheme: dark) {
-  .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
-    background: rgba(180, 180, 180, .10);
-  }
+  --nf-panel-bg: rgba(176, 138, 53, .14);
+  --nf-panel-edge: rgba(176, 138, 53, .54);
+  --nf-label-bg: rgba(176, 138, 53, .19);
 }
