@@ -149,3 +149,20 @@ test('fixture sintética pública cobre janelas, entidades, blocos e índice sem
   assert.match(fixture, /revealedAt/);
   assert.doesNotMatch(fixture, /Overgeared|Braham|Qi Jian|Call of the Heavens/i);
 });
+
+test('currency markers get a coin icon, bold weight, and value-specific colors', () => {
+  assert.match(FORMATTER_CSS, /\.nf-chapter \[data-nf-currency\]\s*\{\s*font-weight:\s*700;/);
+  assert.match(FORMATTER_CSS, /\.nf-chapter \[data-nf-currency\]::before\s*\{[^}]*border-radius:\s*50%;[^}]*box-shadow:/s);
+  for (const code of ['GOLD', 'SILVER', 'COPPER', 'PLATINUM', 'USD']) {
+    assert.match(FORMATTER_CSS, new RegExp(`\\[data-nf-currency="${code}"\\]\\s*\\{\\s*color:`));
+  }
+  assert.match(FORMATTER_CSS, /@media \(prefers-color-scheme: dark\)[^]*\[data-nf-currency="GOLD"\]/s);
+  assert.doesNotMatch(FORMATTER_CSS, /data-nf-currency[^}]*content:\s*["'][^"']+gold/i);
+
+  const example = '<span data-nf-currency="GOLD">3,000 gold</span>';
+  assert.match(example, /data-nf-currency="GOLD"/);
+  assert.match(example, />3,000 gold</);
+  assert.match(distApi.FORMATTER_CSS, /data-nf-currency="GOLD"/);
+  const bundle = fs.readFileSync(path.resolve(__dirname, '..', 'dist', 'novelforge-lnreader.js'), 'utf8');
+  assert.ok(bundle.includes(JSON.stringify(FORMATTER_CSS)), 'bundle LNReader contém o CSS de moeda completo');
+});

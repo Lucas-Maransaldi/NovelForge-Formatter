@@ -7,6 +7,36 @@
   -webkit-tap-highlight-color: rgba(160, 120, 32, .22);
 }
 
+/* Currency markers come from the enriched EPUB; keep their source text intact. */
+.nf-chapter [data-nf-currency] {
+  font-weight: 700;
+}
+.nf-chapter [data-nf-currency]::before {
+  content: "";
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin-inline-end: .28em;
+  vertical-align: -.02em;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px currentColor;
+  opacity: .9;
+}
+.nf-chapter [data-nf-currency="GOLD"] { color: #9a6b00; }
+.nf-chapter [data-nf-currency="SILVER"] { color: #586a7a; }
+.nf-chapter [data-nf-currency="COPPER"] { color: #994b2b; }
+.nf-chapter [data-nf-currency="PLATINUM"] { color: #52658b; }
+.nf-chapter [data-nf-currency="USD"] { color: #267746; }
+
+@media (prefers-color-scheme: dark) {
+  .nf-chapter [data-nf-currency="GOLD"] { color: #efc85b; }
+  .nf-chapter [data-nf-currency="SILVER"] { color: #c1ccd5; }
+  .nf-chapter [data-nf-currency="COPPER"] { color: #e6a07e; }
+  .nf-chapter [data-nf-currency="PLATINUM"] { color: #b5c6f0; }
+  .nf-chapter [data-nf-currency="USD"] { color: #84d59e; }
+}
+
 .nf-chapter > .nf-window[data-nf-id][data-nf-category][data-nf-subtype] {
   --nf-accent: #727780;
   --nf-panel-bg: rgba(127, 127, 127, .08);
